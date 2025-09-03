@@ -37,15 +37,18 @@ To create a modern, AI-driven education hub where high-quality learning is affor
 ### 1. Clone the repository  
 ```bash
 git clone https://github.com/KatlegoKhumalo/AfricAI.git
-cd efric.ai
+cd AfricAI
 2. Setup environment
 Install dependencies (details will be added once stack is finalized).
 
 Configure .env for API keys and database connection.
 
-3. Run locally
+3.1 Run locally (Frontend)
 bash
 Copy code
 # Example (if Node.js)
 npm install
 npm run dev
+
+3.2 Run locally (Backend) *separate terminal*
+mvn clean install 
