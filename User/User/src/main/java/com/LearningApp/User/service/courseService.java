@@ -36,7 +36,7 @@ public class courseService {
         Course.setCoursePrice(CourseDTO.getCoursePrice());
 
         // Set tutor information from current user
-        Course.setTutorUserId(currentUser.getId());
+        Course.setTutorUserId(Integer.parseInt(currentUser.getTutorId()));
 
 
         return CourseRepo.save(Course);

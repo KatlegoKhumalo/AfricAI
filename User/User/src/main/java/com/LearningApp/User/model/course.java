@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,4 +31,7 @@ public class course {
 
     @Column(name = "tutor_user_id", nullable = false)
     private int tutorUserId;
+
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Schedule> schedules;
 }

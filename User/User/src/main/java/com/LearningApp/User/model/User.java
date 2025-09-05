@@ -1,10 +1,8 @@
 package com.LearningApp.User.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -12,7 +10,10 @@ import lombok.Setter;
 
 @Entity
 @RequiredArgsConstructor
+@Data
+@Table(name = "User_Table")
 public class User {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +36,7 @@ public class User {
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     @Size(max = 50, message = "Email must not exceed 50 characters")
+
     public String Email;
     @Getter
     @Setter

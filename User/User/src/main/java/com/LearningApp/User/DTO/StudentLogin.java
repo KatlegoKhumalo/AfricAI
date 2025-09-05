@@ -1,6 +1,7 @@
 package com.LearningApp.User.DTO;
 
 import com.LearningApp.User.model.User;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Data
+
 public class StudentLogin {
     private User user;
 
