@@ -15,10 +15,10 @@ public class ScheduleController {
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
-    @PostMapping("/course/{courseId}")
+    @PostMapping
     public ResponseEntity<Schedule>addSchedule(@PathVariable int courseId,
                                                @RequestBody ScheduleDTO scheduleDTO){
-        Schedule existingSchedule = scheduleService.createSchedule(scheduleDTO);
-        return ResponseEntity.ok(existingSchedule);
+        Schedule schedule = scheduleService.createSchedule(courseId,scheduleDTO);
+        return ResponseEntity.ok(schedule);
     }
 }

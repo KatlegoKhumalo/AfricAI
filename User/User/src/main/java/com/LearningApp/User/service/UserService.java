@@ -40,10 +40,10 @@ public class UserService {
         return repository.save(user);
 
     }
-    public Optional<Boolean> StudentLogin(StudentLogin studentLogin){
-
-        return Optional.of(repository.findByEmail(studentLogin.getEmail()).map(user -> user.getPassword().equals(studentLogin.getPassword())).orElse(false));
-    }
+//    public Optional<Boolean> StudentLogin(StudentLogin studentLogin){
+//
+//        return Optional.of(repository.findByEmail(studentLogin.getEmail()).map(user -> user.getPassword().equals(studentLogin.getPassword())).orElse(false));
+//    }
 
     private String generateTutorId() {
         ArrayList<String> numbers = new ArrayList<>();
