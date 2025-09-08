@@ -22,7 +22,7 @@ public class courseService {
     @Autowired
     private courseRepo CourseRepo;
 
-    public course createCourse(courseDTO CourseDTO, int currentUserId){
+    public course createCourse(courseDTO CourseDTO){
         Optional<User> userOptional = userRepo.findById(Long.valueOf(currentUserId));
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found with id: " + currentUserId);
