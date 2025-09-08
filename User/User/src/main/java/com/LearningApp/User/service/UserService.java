@@ -23,29 +23,21 @@ public class UserService {
 
     }
     public User createTutor(TutorRegister tutorRegister){
-        try{ User user = new User();
+        User user = new User();
         user.setFullName(tutorRegister.getFullName());
         user.setEmail(tutorRegister.getEmail());
         user.setPassword(tutorRegister.getPassword());
         user.setTutorId(generateTutorId());
         return repository.save(user);
-    } catch (Exception e) {
-        e.printStackTrace();
-        throw e;
-    }
     }
     public User createUser(StudentRegister studentRegister){
-       try{ User user = new User();
+        User user = new User();
         user.setFullName(studentRegister.getFullName());
         user.setEmail(studentRegister.getEmail());
         user.setPassword(studentRegister.getPassword());
         user.setIdNumber(studentRegister.getIdNumber());
 
         return repository.save(user);
-    } catch (Exception e) {
-        e.printStackTrace();
-        throw e;
-    }
 
     }
 //    public Optional<Boolean> StudentLogin(StudentLogin studentLogin){
