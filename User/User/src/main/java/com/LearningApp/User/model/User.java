@@ -18,13 +18,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    @Getter
-    @Setter
-    @NotBlank(message = "Id field cannot be blank")
-    @Size(min = 13,max = 13 , message = "Enter valid Id number")
-    @Pattern(regexp = "\\d{13}", message = "Id number must contain only digits")
-    @Column(unique = true)
-    private int IdNumber;
+//    @Getter
+//    @Setter
+//    @NotNull(message = "Id field cannot be blank")
+//    @Size(min = 13,max = 13 , message = "Enter valid Id number")
+//    @Pattern(regexp = "\\d{13}", message = "Id number must contain only digits")
+//    @Column(unique = true)
+//    private String IdNumber;
     @Getter
     @Setter
     @NotNull(message = "Full Name Field cannot be blank")
@@ -36,7 +36,6 @@ public class User {
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     @Size(max = 50, message = "Email must not exceed 50 characters")
-
     public String Email;
     @Getter
     @Setter
@@ -45,10 +44,21 @@ public class User {
     @Setter
     @NotBlank(message = "Enter password")
     @Size(min = 8, max = 8, message = "Your password must be 8 characters")
-    @Pattern(regexp = "r'[!@#$%^&*(),.?\":{}|<>]'", message = "Password must contain a special character")
+    @Pattern(regexp = ".*[!@#$%^&*(),.?\":{}|<>].*", message = "Password must contain a special character")
     private String Password;
     @Setter
     @Getter
     private String TutorId;
+
+
+    public String getIdNumber() {
+        return IdNumber;
+    }
+
+    public void setIdNumber(String idNumber) {
+        IdNumber = idNumber;
+    }
+//
+    private String IdNumber;
 
 }

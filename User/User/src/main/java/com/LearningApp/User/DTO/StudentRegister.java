@@ -2,6 +2,7 @@ package com.LearningApp.User.DTO;
 
 import com.LearningApp.User.model.User;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +24,14 @@ public class StudentRegister {
 
     @NotBlank(message = "Enter password")
     @Size(min = 8, max = 8, message = "Your password must be 8 characters")
-    @Pattern(regexp = "r'[!@#$%^&*(),.?\":{}|<>]'", message = "Password must contain a special character")
+    @Pattern(regexp = ".*[!@#$%^&*(),.?\":{}|<>].*", message = "Password must contain a special character")
     private String Password;
 
     @NotBlank(message = "Id field cannot be blank")
     @Size(min = 13,max = 13 , message = "Enter valid Id number")
     @Pattern(regexp = "\\d{13}", message = "Id number must contain only digits")
     @Column(unique = true)
-    private int IdNumber;
+    private String IdNumber;
 
-    private int Id;
+//    private int Id;
 }
