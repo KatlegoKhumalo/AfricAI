@@ -1,0 +1,70 @@
+🔗 MongoDB Connection Setup for AfricAI Team
+1. Add MongoDB Driver Dependency (Maven)
+
+In pom.xml:
+
+<dependency>
+  <groupId>org.mongodb</groupId>
+  <artifactId>mongodb-driver-sync</artifactId>
+  <version>5.2.0</version>
+</dependency>
+
+2. Use Your Specific Connection String
+
+Each of you has your own username but the same password: 43214321.
+
+Replace <cluster-url> with the one from AfricAI MongoDB Atlas (usually looks like cluster0.xxxxx.mongodb.net).
+
+3. Connection Code
+
+Copy this MongoConnection.java file into your backend project:
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+
+public class MongoConnection {
+
+    // Replace with your own username
+    private static final String CONNECTION_STRING = "mongodb+srv://<username>:43214321@<cluster-url>/AfricAI?retryWrites=true&w=majority";
+
+    public static MongoDatabase getDatabase() {
+        MongoClient mongoClient = MongoClients.create(CONNECTION_STRING);
+        return mongoClient.getDatabase("AfricAI"); // database name
+    }
+}
+
+4. Testing the Connection
+
+Create a Main.java:
+
+public class Main {
+    public static void main(String[] args) {
+        var database = MongoConnection.getDatabase();
+        System.out.println("Connected to database: " + database.getName());
+    }
+}
+
+5. Your Exact Connection Strings
+
+✅ Njabulo Mazibuko
+
+private static final String CONNECTION_STRING = "mongodb+srv://Njabulo-Mazibuko:43214321@<cluster-url>/AfricAI?retryWrites=true&w=majority";
+
+
+✅ Botlhale Mphai
+
+private static final String CONNECTION_STRING = "mongodb+srv://Botlhale-Mphai:43214321@<cluster-url>/AfricAI?retryWrites=true&w=majority";
+
+
+✅ Ayabulela Jilimba
+
+private static final String CONNECTION_STRING = "mongodb+srv://Ayabulela-Jilimba:43214321@<cluster-url>/AfricAI?retryWrites=true&w=majority";
+
+6. Run
+
+Run Main.java.
+
+If successful, you’ll see:
+
+Connected to database: AfricAI
