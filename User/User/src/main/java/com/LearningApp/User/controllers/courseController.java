@@ -5,10 +5,7 @@ import com.LearningApp.User.model.course;
 import com.LearningApp.User.service.courseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/course")
@@ -19,8 +16,9 @@ public class courseController {
         CourseService = courseService;
     }
     @PostMapping("/Addcourse")
-    public ResponseEntity<String>addcourse(@Valid @RequestBody courseDTO CourseDTO){
-        course u = CourseService.createCourse(CourseDTO);
+    public ResponseEntity<String>addcourse(@Valid @RequestBody courseDTO CourseDTO,
+                                           @RequestParam int currentUserId){
+        course u = CourseService.createCourse(CourseDTO, currentUserId);
         return ResponseEntity.ok("Course Created ");
     }
 }

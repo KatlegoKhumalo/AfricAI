@@ -22,8 +22,8 @@ public class courseService {
     @Autowired
     private courseRepo CourseRepo;
 
-    public course createCourse(courseDTO CourseDTO){
-        Optional<User> userOptional = userRepo.findById(Long.valueOf(currentUserId));
+    public course createCourse(courseDTO CourseDTO, int currentUserId){
+       try{ Optional<User> userOptional = userRepo.findById(Long.valueOf(currentUserId));
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User not found with id: " + currentUserId);
         }
@@ -39,7 +39,9 @@ public class courseService {
         Course.setTutorUserId(Integer.parseInt(currentUser.getTutorId()));
 
 
-        return CourseRepo.save(Course);
+        return CourseRepo.save(Course);} catch (Exception e) {
+           throw new RuntimeException(e);
+       }
     }
 
     public void deleteCourse(Long courseId, Long currentUserId) {
