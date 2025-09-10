@@ -35,4 +35,9 @@ public class course {
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Schedule> schedules;
+
+
+    @ManyToOne
+    @JoinColumn(name = "TutorId",nullable = false)
+    private User user;
 }

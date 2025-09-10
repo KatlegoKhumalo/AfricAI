@@ -15,10 +15,10 @@ public class TutorLogin {
     @Size(min = 7, max = 7 , message = ("Enter valid Tutor Id"))
     @NotBlank(message = "Id field cannot be blank")
     @Pattern(regexp = "\\d{7}", message = "Id number must contain only digits")
-    private int TutorId;
+    private int tutorId;
 
     @NotBlank(message = "Enter password")
     @Size(min = 8, max = 8, message = "Your password must be 8 characters")
-    @Pattern(regexp = "r'[!@#$%^&*(),.?\":{}|<>]'", message = "Password must contain a special character")
+    @Pattern(regexp = ".*[!@#$%^&*(),.?\":{}|<>].*", message = "Password must contain a special character")
     private String Password;
 }
