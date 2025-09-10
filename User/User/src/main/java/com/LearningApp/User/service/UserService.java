@@ -23,12 +23,15 @@ public class UserService {
 
     }
     public User createTutor(TutorRegister tutorRegister){
-        User user = new User();
+        try{User user = new User();
         user.setFullName(tutorRegister.getFullName());
         user.setEmail(tutorRegister.getEmail());
         user.setPassword(tutorRegister.getPassword());
         user.setTutorId(generateTutorId());
-        return repository.save(user);
+        return repository.save(user);} catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
     public User createUser(StudentRegister studentRegister){
         User user = new User();
