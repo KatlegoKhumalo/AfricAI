@@ -18,26 +18,29 @@ public class course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int courseId;
+    private int Id;
 
     @NotBlank(message = "Course code is mandatory")
     private String courseCode;
+    @NotBlank(message = "Course Classification is mandatory")
     private String courseClassification;
     @NotNull(message = "Course name Field cannot be blank")
     @Size(min = 2 , max = 50 , message = "Enter a Valid Course Name ")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Course name can only contain letters and spaces")
     private String courseName;
+    @NotNull(message = "Course Duration is Mandatory")
     private int courseDuration;
     private double coursePrice;
+    private String CourseId;
 
-    @Column(name = "tutor_user_id", nullable = false)
-    private int tutorUserId;
+//    @Column(name = "tutor_user_id", nullable = false)
+//    private int tutorUserId;
 
     @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Schedule> schedules;
 
 
     @ManyToOne
-    @JoinColumn(name = "TutorId",nullable = false)
+    @JoinColumn(name = "Tutor_Id",nullable = false)
     private User user;
 }

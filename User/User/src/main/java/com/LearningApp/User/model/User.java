@@ -54,7 +54,7 @@ public class User {
 
 
     private String tutorId;
-    @OneToMany(mappedBy = "tutorUserId",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "courseName",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<course> Courses;
 
 }
