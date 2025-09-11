@@ -1,5 +1,8 @@
 package com.LearningApp.User.controllers;
 
+
+import com.LearningApp.User.DTO.CreateCourseDTO;
+import com.LearningApp.User.DTO.TutorRegister;
 import com.LearningApp.User.DTO.courseDTO;
 import com.LearningApp.User.model.course;
 import com.LearningApp.User.service.courseService;
@@ -15,10 +18,16 @@ public class courseController {
     public courseController(courseService courseService) {
         CourseService = courseService;
     }
-    @PostMapping("/Addcourse")
-    public ResponseEntity<String>addcourse(@Valid @RequestBody courseDTO CourseDTO,
-                                           @RequestParam int currentUserId){
-        course u = CourseService.createCourse(CourseDTO, currentUserId);
-        return ResponseEntity.ok("Course Created ");
+    @PostMapping("/AddCourse")
+    public ResponseEntity<String>addCourse(@Valid @RequestBody CreateCourseDTO createCourseDTO
+                                           ){
+        course v = CourseService.createCourse(createCourseDTO.getTutor(),createCourseDTO.getCourses());
+        return ResponseEntity.ok("Course Added"+v.getCourseName());
+    }
+    @DeleteMapping("/{tutorId}/CourseId")
+    public ResponseEntity<String>DeleteCourse(@Valid @PathVariable String tutorId,
+                                              @PathVariable String CourseId){
+        CourseService.deleteCourse(tutorId, CourseId);
+        return ResponseEntity.ok("Course Deleted");
     }
 }

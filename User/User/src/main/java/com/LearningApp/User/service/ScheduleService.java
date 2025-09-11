@@ -20,8 +20,8 @@ public class ScheduleService {
         this.courseRepository = courseRepository;
     }
 
-    public Schedule createSchedule(int courseId,ScheduleDTO scheduleDTO){
-        Optional<course> Course = courseRepository.findById(Long.valueOf(courseId).describeConstable().orElseThrow(()->new RuntimeException("Course not found")));
+    public Schedule createSchedule(String CourseId,ScheduleDTO scheduleDTO){
+        Optional<course> Course = courseRepository.findById(String.valueOf(Long.valueOf(CourseId).describeConstable().orElseThrow(()->new RuntimeException("Course not found"))));
 
         Schedule schedule = new Schedule();
         schedule.setDayOfTheWeek(scheduleDTO.getDayOfTheWeek());

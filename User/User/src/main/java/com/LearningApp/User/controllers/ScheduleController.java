@@ -16,9 +16,9 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
     @PostMapping
-    public ResponseEntity<Schedule>addSchedule(@PathVariable int courseId,
+    public ResponseEntity<Schedule>addSchedule(@PathVariable String CourseId,
                                                @RequestBody ScheduleDTO scheduleDTO){
-        Schedule schedule = scheduleService.createSchedule(courseId,scheduleDTO);
+        Schedule schedule = scheduleService.createSchedule(CourseId,scheduleDTO);
         return ResponseEntity.ok(schedule);
     }
 }
