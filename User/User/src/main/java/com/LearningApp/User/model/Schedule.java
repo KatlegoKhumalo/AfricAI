@@ -18,8 +18,17 @@ public class Schedule {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String DayOfTheWeek;
+    private String courseName;
 
-    @ManyToOne
-    @JoinColumn(name = "courseId",nullable = false)
-    private course course;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id",nullable = false)
+    private course Course;
+
+    public course getCourse() {
+        return Course;
+    }
+
+    public void setCourse(course course) {
+        Course = course;
+    }
 }
