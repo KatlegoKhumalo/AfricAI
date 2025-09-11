@@ -19,12 +19,12 @@ public class courseController {
         CourseService = courseService;
     }
     @PostMapping("/AddCourse")
-    public ResponseEntity<String>addCourse(@Valid @RequestBody CreateCourseDTO createCourseDTO
+    public ResponseEntity<String>addCourse(@Valid @RequestBody courseDTO CourseDTO
                                            ){
-        course v = CourseService.createCourse(createCourseDTO.getTutor(),createCourseDTO.getCourses());
-        return ResponseEntity.ok("Course Added"+v.getCourseName());
+        course v = CourseService.createCourse(CourseDTO);
+        return ResponseEntity.ok("Course Added");
     }
-    @DeleteMapping("/{tutorId}/CourseId")
+    @DeleteMapping("/{tutorId}/{CourseId}")
     public ResponseEntity<String>DeleteCourse(@Valid @PathVariable String tutorId,
                                               @PathVariable String CourseId){
         CourseService.deleteCourse(tutorId, CourseId);

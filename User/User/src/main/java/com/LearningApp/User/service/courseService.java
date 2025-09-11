@@ -58,8 +58,8 @@ public class courseService {
 //
 //        CourseRepo.delete(Course);
 //    }
-    public course createCourse(TutorRegister tutorRegister,courseDTO CourseDTO){
-      try{  User user = userRepo.findBytutorId(tutorRegister.getTutorId()).orElseThrow(()->new RuntimeException("Tutor not found"));
+    public course createCourse(courseDTO CourseDTO){
+      try{  User user = userRepo.findBytutorId(CourseDTO.getTutorId()).orElseThrow(()->new RuntimeException("Tutor not found"));
         course Course = new course();
         Course.setCourseName(CourseDTO.getCourseName());
         Course.setCourseCode(CourseDTO.getCourseCode());
@@ -78,11 +78,14 @@ public class courseService {
 
     }
     public void deleteCourse(String tutorId, String CourseId){
-        course Course = CourseRepo.findById(CourseId).orElseThrow(()->new RuntimeException("Course not found"));
+       try{ course Course = CourseRepo.findById(CourseId).orElseThrow(()->new RuntimeException("Course not found"));
         User user = new User();
-        if(!user.getTutorId().equals(tutorId)){
+        courseDTO CourseDTO = new courseDTO();
+        if(!CourseDTO.getTutorId().equals(tutorId)){
             throw new RuntimeException("You are not allowed to delete a course that does not belong to you");
-        }
+        }} catch (Exception e) {
+           e.printStackTrace();
+       }
     }
     private String generateCourseId() {
         ArrayList<String> numbers = new ArrayList<>();
