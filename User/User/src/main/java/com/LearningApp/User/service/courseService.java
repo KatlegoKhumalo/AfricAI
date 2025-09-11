@@ -59,7 +59,7 @@ public class courseService {
 //        CourseRepo.delete(Course);
 //    }
     public course createCourse(TutorRegister tutorRegister,courseDTO CourseDTO){
-        User user = userRepo.findBytutorId(tutorRegister.getTutorId()).orElseThrow(()->new RuntimeException("Tutor not found"));
+      try{  User user = userRepo.findBytutorId(tutorRegister.getTutorId()).orElseThrow(()->new RuntimeException("Tutor not found"));
         course Course = new course();
         Course.setCourseName(CourseDTO.getCourseName());
         Course.setCourseCode(CourseDTO.getCourseCode());
@@ -68,7 +68,12 @@ public class courseService {
         Course.setCoursePrice(CourseDTO.getCoursePrice());
         Course.setCourseId(generateCourseId());
 
-        return CourseRepo.save(Course);
+        Course.setUser(user);
+
+        return CourseRepo.save(Course);} catch (Exception e) {
+          e.printStackTrace();
+          throw new RuntimeException();
+      }
 
 
     }

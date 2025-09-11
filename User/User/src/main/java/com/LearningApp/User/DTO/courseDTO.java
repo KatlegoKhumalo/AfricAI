@@ -25,4 +25,5 @@ public class courseDTO {
     @Positive(message = "Course duration must be positive")
     private double coursePrice;
     private String CourseId;
+
 }

@@ -33,6 +33,7 @@ public class course {
     private double coursePrice;
     private String CourseId;
 
+
 //    @Column(name = "tutor_user_id", nullable = false)
 //    private int tutorUserId;
 
