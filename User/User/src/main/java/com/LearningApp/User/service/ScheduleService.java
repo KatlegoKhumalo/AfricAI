@@ -7,26 +7,24 @@ import com.LearningApp.User.model.Schedule;
 import com.LearningApp.User.model.course;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class ScheduleService {
-
     private final ScheduleRepo scheduleRepo;
-    private final courseRepo courseRepository;
+    private final courseRepo CourseRepo;
 
-    public ScheduleService(ScheduleRepo scheduleRepo, courseRepo courseRepository) {
+    public ScheduleService(ScheduleRepo scheduleRepo, courseRepo courseRepo) {
         this.scheduleRepo = scheduleRepo;
-        this.courseRepository = courseRepository;
+        CourseRepo = courseRepo;
     }
+    public Schedule addSchedule(String CourseId, ScheduleDTO scheduleDTO){
+        course Course = CourseRepo.findById(CourseId).orElseThrow(()->new RuntimeException("Course not found"));
 
-    public Schedule createSchedule(String CourseId,ScheduleDTO scheduleDTO){
-        Optional<course> Course = courseRepository.findById(String.valueOf(Long.valueOf(CourseId).describeConstable().orElseThrow(()->new RuntimeException("Course not found"))));
-
-        Schedule schedule = new Schedule();
-        schedule.setDayOfTheWeek(scheduleDTO.getDayOfTheWeek());
+        Schedule schedule=new Schedule();
         schedule.setStartTime(scheduleDTO.getStartTime());
         schedule.setEndTime(scheduleDTO.getEndTime());
+        schedule.setDayOfTheWeek(scheduleDTO.getDayOfTheWeek());
+        schedule.setCourseName(Course.getCourseName());
+        schedule.setCourse(Course);
         return scheduleRepo.save(schedule);
     }
 }

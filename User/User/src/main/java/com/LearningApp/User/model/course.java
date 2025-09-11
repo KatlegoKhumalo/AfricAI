@@ -38,11 +38,11 @@ public class course {
 //    @Column(name = "tutor_user_id", nullable = false)
 //    private int tutorUserId;
 
-    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "Course",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Schedule> schedules;
 
 
     @ManyToOne
-    @JoinColumn(name = "Tutor_Id",nullable = false)
+    @JoinColumn(name = "tutorId",nullable = false)
     private User user;
 }

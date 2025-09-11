@@ -3,22 +3,22 @@ package com.LearningApp.User.controllers;
 import com.LearningApp.User.DTO.ScheduleDTO;
 import com.LearningApp.User.model.Schedule;
 import com.LearningApp.User.service.ScheduleService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/courses/{courseId}/schedule")
+@RequestMapping("/api/Schedule/{CourseId}")
 public class ScheduleController {
-
-    private final ScheduleService scheduleService;
+    public final ScheduleService scheduleService;
 
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
     @PostMapping
-    public ResponseEntity<Schedule>addSchedule(@PathVariable String CourseId,
-                                               @RequestBody ScheduleDTO scheduleDTO){
-        Schedule schedule = scheduleService.createSchedule(CourseId,scheduleDTO);
-        return ResponseEntity.ok(schedule);
+    public ResponseEntity<String>addSchedule(@Valid @RequestBody ScheduleDTO scheduleDTO,
+                                                @PathVariable String CourseId) {
+        Schedule schedule = scheduleService.addSchedule(CourseId,scheduleDTO);
+        return ResponseEntity.ok("Schedule Added" + schedule);
     }
 }
