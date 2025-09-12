@@ -17,7 +17,7 @@ public class ScheduleController {
     }
     @PostMapping
     public ResponseEntity<String>addSchedule(@Valid @RequestBody ScheduleDTO scheduleDTO,
-                                                @PathVariable String CourseId) {
+                                                @PathVariable int CourseId) {
         Schedule schedule = scheduleService.addSchedule(CourseId,scheduleDTO);
         return ResponseEntity.ok("Schedule Added" + schedule);
     }

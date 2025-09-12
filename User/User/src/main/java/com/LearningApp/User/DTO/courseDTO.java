@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 public class courseDTO {
-    @NotBlank(message = "Course name is mandatory")
+    //@NotBlank(message = "Course name is mandatory")
     private String courseName;
 
     @NotBlank(message = "Course code is mandatory")

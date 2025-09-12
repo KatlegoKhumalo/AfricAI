@@ -2,10 +2,7 @@ package com.LearningApp.User.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -55,6 +52,7 @@ public class User {
 
     private String tutorId;
     @OneToMany(mappedBy = "courseName",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<course> Courses;
+    @ToString.Exclude
+    private List<Course> Courses;
 
 }

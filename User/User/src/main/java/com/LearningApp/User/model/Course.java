@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Table(name = "Courses")
-public class course {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,21 +25,22 @@ public class course {
     private String courseCode;
     @NotBlank(message = "Course Classification is mandatory")
     private String courseClassification;
-    @NotNull(message = "Course name Field cannot be blank")
+    //@NotNull(message = "Course name Field cannot be blank")
     @Size(min = 2 , max = 50 , message = "Enter a Valid Course Name ")
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Course name can only contain letters and spaces")
     private String courseName;
     @NotNull(message = "Course Duration is Mandatory")
     private int courseDuration;
     private double coursePrice;
-    private String CourseId;
+    private int courseId;
 //    private String tutorId;
 
 
 //    @Column(name = "tutor_user_id", nullable = false)
 //    private int tutorUserId;
 
-    @OneToMany(mappedBy = "Course",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "course",cascade = CascadeType.ALL,orphanRemoval = true)
+    @ToString.Exclude
     private List<Schedule> schedules;
 
 
