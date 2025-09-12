@@ -4,31 +4,31 @@ package com.LearningApp.User.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
+@Table(name = "Schedules")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private int Id;
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String DayOfTheWeek;
-    private String courseName;
+//    private String courseName;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id",nullable = false)
-    private course Course;
+    private Course course;
 
-    public course getCourse() {
-        return Course;
+    public Course getCourse() {
+        return course;
     }
 
-    public void setCourse(course course) {
-        Course = course;
+    public void setCourse(Course course) {
+       this.course = course;
     }
 }

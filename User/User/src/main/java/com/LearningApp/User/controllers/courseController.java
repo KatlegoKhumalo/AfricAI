@@ -4,7 +4,8 @@ package com.LearningApp.User.controllers;
 import com.LearningApp.User.DTO.CreateCourseDTO;
 import com.LearningApp.User.DTO.TutorRegister;
 import com.LearningApp.User.DTO.courseDTO;
-import com.LearningApp.User.model.course;
+import com.LearningApp.User.model.Course;
+import com.LearningApp.User.model.Course;
 import com.LearningApp.User.service.courseService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,12 @@ public class courseController {
     @PostMapping("/AddCourse")
     public ResponseEntity<String>addCourse(@Valid @RequestBody courseDTO CourseDTO
                                            ){
-        course v = CourseService.createCourse(CourseDTO);
+        Course course = CourseService.createCourse(CourseDTO);
         return ResponseEntity.ok("Course Added");
     }
     @DeleteMapping("/{tutorId}/{CourseId}")
     public ResponseEntity<String>DeleteCourse(@Valid @PathVariable String tutorId,
-                                              @PathVariable String CourseId){
+                                              @PathVariable int CourseId){
         CourseService.deleteCourse(tutorId, CourseId);
         return ResponseEntity.ok("Course Deleted");
     }
