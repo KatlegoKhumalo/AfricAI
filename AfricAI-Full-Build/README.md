@@ -54,28 +54,32 @@ Create the following environment files:
 #### Frontend Environment (frontend/.env)
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api/v1
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
+VITE_GEMINI_API_KEY=AIzaSyBIVTb4PFUeut9mpV0lRoi1QEW3rCLe8KI
 ```
 
 #### Backend Environment (backend/.env)
 ```env
+# AfricAI Backend Environment Variables
+
 # MongoDB Configuration
-MONGO_URI=your_mongodb_connection_string
+MONGO_URI=mongodb+srv://katlegokhumalo718_db_user:<$Katlie94>@africaicluster.joqlgqh.mongodb.net/?retryWrites=true&w=majority&appName=AfricAICluster
 
 # JWT Configuration
-JWT_SECRET_KEY=your_jwt_secret_key
+JWT_SECRET_KEY=1B6a90b6doOs9AsZgOXmhxxSsWQb63IM
 JWT_EXPIRATION_MS=86400000
 
 # AI Configuration
-GEMINI_API_KEY=your_gemini_api_key
+GEMINI_API_KEY=AIzaSyBIVTb4PFUeut9mpV0lRoi1QEW3rCLe8KI
 
-# LiveKit Configuration
-LIVEKIT_API_KEY=your_livekit_api_key
-LIVEKIT_API_SECRET=your_livekit_secret
-LIVEKIT_WS_URL=your_livekit_ws_url
+# LiveKit Configuration (for real-time AI)
+LIVEKIT_API_KEY=APIsQkVBNR2aoPo
+LIVEKIT_API_SECRET=lMySOAShtNLFkVVfvQnri4Rs6oJqyBmNePePgfPznfTC
+LIVEKIT_WS_URL=wss://africai-wuzzjhxw.livekit.cloud
 
 # Server Configuration
 SERVER_PORT=8080
+
+# CORS Configuration
 CORS_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
