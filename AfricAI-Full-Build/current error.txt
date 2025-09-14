@@ -1,0 +1,2 @@
+Exception authenticating MongoCredential{mechanism=SCRAM-SHA-1, userName='katlegokhumalo718_db_user', source='admin', password=<hidden>, mechanismProperties=<hidden>}
+
