@@ -1,0 +1,10 @@
+services:
+  backend-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: learning-app-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
