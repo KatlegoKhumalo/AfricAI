@@ -12,6 +12,10 @@ This project uses Docker Compose to run the full stack, including the backend an
 -   A terminal or command line interface (like Git Bash for Windows users).
 -   Your API keys for MongoDB Atlas, Gemini, and LiveKit.
 
+  ### OR
+
+-   Java 21 version on your local PC.
+
 ### 1. Configure Environment Variables
 
 The backend service requires a `.env` file for configuration. Create a file named `.env` inside the `backend/` directory.
@@ -55,6 +59,10 @@ This command will:
 2.  Start the backend container.
 3.  The application will be available on `http://localhost:8080`.
 
+### OR 
+
+-   Click the start-backend.bat file.
+
 ### 3. Running the Frontend
 
 To interact with the application, you also need to run the frontend:
@@ -70,6 +78,9 @@ To interact with the application, you also need to run the frontend:
     npm run dev
     ```
 4.  The frontend will be available at `http://localhost:5173` (or another port if 5173 is busy).
+
+### OR
+-   Click start-frontend.bat
 
 ## API Endpoints
 
