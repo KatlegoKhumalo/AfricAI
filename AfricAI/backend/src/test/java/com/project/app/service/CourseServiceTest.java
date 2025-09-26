@@ -12,7 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -89,7 +91,9 @@ class CourseServiceTest {
     }
 
     @Test
-    void createCourse_Success() {
+    void createCourse_Success() throws IOException {
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test image content".getBytes());
+
         when(tutorRepository.findById("tutor1")).thenReturn(Optional.of(tutor));
         when(courseRepository.save(any(Course.class))).thenAnswer(invocation -> {
             Course c = invocation.getArgument(0);
@@ -97,7 +101,7 @@ class CourseServiceTest {
             return c;
         });
 
-        CourseDto result = courseService.createCourse(courseDto);
+        CourseDto result = courseService.createCourse(courseDto, file);
 
         assertNotNull(result);
         assertEquals("New Course", result.getTitle());

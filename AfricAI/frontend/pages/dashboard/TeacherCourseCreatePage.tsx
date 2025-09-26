@@ -16,7 +16,12 @@ const TeacherCourseCreatePage: React.FC = () => {
         validationRules: {
             title: val => !val.trim() ? 'Course title is required.' : null,
             description: val => !val.trim() ? 'Course description is required.' : null,
-            price: val => !val || isNaN(Number(val)) || Number(val) <= 0 ? 'Please enter a valid positive price.' : null
+            price: val => {
+                const n = Number(String(val).replace(',', '.'));
+                if (isNaN(n)) return 'Please enter a valid price.';
+                if (n < 49 || n > 99) return 'Price must be between R49 and R99.';
+                return null;
+            }
         },
         onSubmit: async (formValues) => {
             // Simulate API call

@@ -7,6 +7,7 @@ interface AuthContextType {
   token: string | null;
   login: (user: User, token: string) => void;
   logout: () => void;
+  updateUser: (updatedFields: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +21,14 @@ const getInitialUser = (): User | null => {
             // This prevents runtime errors when calling Date methods on a string.
             if (parsedUser.joinDate) {
                 parsedUser.joinDate = new Date(parsedUser.joinDate);
+            }
+            // Normalize role to lowercase so UI role checks work after reload
+            if (parsedUser.role && typeof parsedUser.role === 'string') {
+                parsedUser.role = String(parsedUser.role).toLowerCase();
+            }
+            // Ensure avatar fallback is applied on reload
+            if (!parsedUser.avatarUrl) {
+                parsedUser.avatarUrl = '/assets/images/default-avatar.svg';
             }
             return parsedUser;
         }
@@ -68,7 +77,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [token]);
 
   const login = (userData: User, authToken: string) => {
-    setUser(userData);
+    // Normalize role casing to match frontend expectations ('learner' | 'tutor' | 'admin')
+    const normalizedRole = (userData as any)?.role ? String((userData as any).role).toLowerCase() : undefined;
+    const normalizedUser: User = { 
+      ...userData, 
+      role: (normalizedRole as any),
+      avatarUrl: userData.avatarUrl || '/assets/images/default-avatar.svg'
+    };
+    setUser(normalizedUser);
     setToken(authToken);
   };
 
@@ -77,8 +93,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
   };
 
+  const updateUser = (updatedFields: Partial<User>) => {
+    setUser(prevUser => {
+      if (!prevUser) return null;
+      const newUser = { ...prevUser, ...updatedFields };
+      // Also update localStorage
+      window.localStorage.setItem('africai-user', JSON.stringify(newUser));
+      return newUser;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

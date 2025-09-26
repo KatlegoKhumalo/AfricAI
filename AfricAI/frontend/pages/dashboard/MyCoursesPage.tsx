@@ -15,27 +15,33 @@ const MyCoursesPage: React.FC = () => {
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // For this demo, we'll assume the user is enrolled in the first two courses from the mock data.
-  const enrolledCourseIds = ['1', '5']; 
-  
   useEffect(() => {
-    setIsLoading(true);
-    // Simulate fetching user's enrolled courses
-    const timer = setTimeout(() => {
+    const loadEnrollments = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem('africai-token');
+        const res = await fetch('/api/v1/enrollments/mine', { headers: token ? { 'Authorization': `Bearer ${token}` } : undefined });
+        if (!res.ok) throw new Error('Failed to load enrollments');
+        const enrollments = await res.json();
+        const courseIds: string[] = enrollments.map((e: any) => e.courseId);
         const courses = mockCourses
-            .filter(course => enrolledCourseIds.includes(course.id))
-            .map(course => {
-                const latestResult = user ? getLatestResultForUserCourse(user.id, course.id) : null;
-                return {
-                    ...course,
-                    progress: calculateProgress(course),
-                    score: latestResult?.score,
-                }
-            });
+          .filter(c => courseIds.includes(c.id))
+          .map(course => {
+            const latestResult = user ? getLatestResultForUserCourse(user.id, course.id) : null;
+            return {
+              ...course,
+              progress: calculateProgress(course),
+              score: latestResult?.score,
+            } as Course;
+          });
         setEnrolledCourses(courses);
+      } catch (e) {
+        setEnrolledCourses([]);
+      } finally {
         setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+      }
+    };
+    loadEnrollments();
   }, [user, calculateProgress, getLatestResultForUserCourse]);
 
   return (

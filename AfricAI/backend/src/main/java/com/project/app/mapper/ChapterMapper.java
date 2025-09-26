@@ -33,4 +33,27 @@ public class ChapterMapper {
                 .map(ChapterMapper::toChapterDto)
                 .collect(Collectors.toList());
     }
+
+    public static Chapter fromChapterDto(ChapterDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Chapter chapter = new Chapter();
+        chapter.setId(dto.getId());
+        chapter.setTitle(dto.getTitle());
+        chapter.setDuration(dto.getDuration());
+        chapter.setVideoUrl(dto.getVideoUrl());
+        chapter.setContent(dto.getContent());
+        return chapter;
+    }
+
+    public static List<Chapter> fromChapterDtoList(List<ChapterDto> chapterDtos) {
+        if (chapterDtos == null || chapterDtos.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return chapterDtos.stream()
+                .map(ChapterMapper::fromChapterDto)
+                .collect(Collectors.toList());
+    }
 }

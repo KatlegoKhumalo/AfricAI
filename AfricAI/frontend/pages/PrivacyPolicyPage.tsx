@@ -6,44 +6,63 @@ const PrivacyPolicyPage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <GlassCard className="p-8 md:p-12">
                 <h1 className="text-4xl font-bold mb-6">Privacy Policy</h1>
-                <div className="prose prose-invert prose-lg max-w-none text-gray-300 space-y-4">
-                    <p>Last Updated: {new Date().toLocaleDateString()}</p>
+                <div className="prose prose-invert prose-lg max-w-none text-gray-300 space-y-6">
+                    <p className="text-gray-400">Last Updated: {new Date().toLocaleDateString()}</p>
 
-                    <h2 className="text-2xl font-semibold text-white">1. Introduction</h2>
+                    <h2 className="text-2xl font-semibold text-white pt-4">1. Introduction</h2>
                     <p>
-                        Welcome to AfricAI ("we," "our," or "us"). We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.
+                        AfricAI ("we," "our," "us") is committed to protecting your privacy. This Privacy Policy details how we collect, use, and protect your personal information when you use our Services. By using our platform, you agree to the collection and use of information in accordance with this policy.
                     </p>
 
-                    <h2 className="text-2xl font-semibold text-white">2. Information We Collect</h2>
-                    <p>
-                        We may collect information about you in a variety of ways. The information we may collect on the Site includes:
-                    </p>
+                    <h2 className="text-2xl font-semibold text-white pt-4">2. Information We Collect</h2>
+                    <p>We collect information to provide and improve our Services. The types of information we collect include:</p>
                     <ul>
-                        <li><strong>Personal Data:</strong> Personally identifiable information, such as your name, email address, and demographic information, that you voluntarily give to us when you register with the Site or when you choose to participate in various activities related to the Site, such as online chat and message boards.</li>
-                        <li><strong>Derivative Data:</strong> Information our servers automatically collect when you access the Site, such as your IP address, your browser type, your operating system, your access times, and the pages you have viewed directly before and after accessing the Site.</li>
-                        <li><strong>Financial Data:</strong> Financial information, such as data related to your payment method (e.g., valid credit card number, card brand, expiration date) that we may collect when you purchase, order, return, exchange, or request information about our services from the Site. We store only very limited, if any, financial information that we collect. Otherwise, all financial information is stored by our payment processor (e.g., Stripe).</li>
+                        <li><strong>Personal Data:</strong> Information you provide when you create an account, such as your name, email address, and password.</li>
+                        <li><strong>Profile Data:</strong> Information you add to your profile, such as a photo, bio, or links to your social media.</li>
+                        <li><strong>Payment Data:</strong> To process payments, we collect transaction details. However, we do not store your full credit card information, which is handled by our secure payment processors.</li>
+                        <li><strong>Course Data:</strong> We track your progress in courses, including completed lessons, quiz scores, and project submissions.</li>
+                        <li><strong>Communications:</strong> If you contact us directly, we may receive additional information about you.</li>
+                        <li><strong>Automatically Collected Data:</strong> We automatically log usage data when you use the Services, such as your IP address, browser type, and device information.</li>
                     </ul>
 
-                    <h2 className="text-2xl font-semibold text-white">3. Use of Your Information</h2>
-                    <p>
-                        Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. Specifically, we may use information collected about you via the Site to:
-                    </p>
+                    <h2 className="text-2xl font-semibold text-white pt-4">3. How We Use Your Information</h2>
+                    <p>We use your information for various purposes, including to:</p>
                     <ul>
-                        <li>Create and manage your account.</li>
-                        <li>Process your payments and refunds.</li>
-                        <li>Email you regarding your account or order.</li>
-                        <li>Monitor and analyze usage and trends to improve your experience with the Site.</li>
-                        <li>Notify you of updates to the Site.</li>
+                        <li>Provide, operate, and maintain our Services.</li>
+                        <li>Process transactions and manage your account.</li>
+                        <li>Improve, personalize, and expand our Services.</li>
+                        <li>Communicate with you, including for customer service and to send you updates and marketing information.</li>
+                        <li>Monitor and analyze usage to ensure the security and integrity of our platform.</li>
                     </ul>
 
-                    <h2 className="text-2xl font-semibold text-white">4. Security of Your Information</h2>
+                    <h2 className="text-2xl font-semibold text-white pt-4">4. Data Sharing and Disclosure</h2>
                     <p>
-                        We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.
+                        We do not sell your personal information. We may share your information with third-party service providers who perform services for us (like payment processing and hosting), with your instructors to facilitate courses, or if required by law.
+                    </p>
+
+                    <h2 className="text-2xl font-semibold text-white pt-4">5. Data Security</h2>
+                    <p>
+                        We implement a variety of security measures to maintain the safety of your personal information. However, no electronic storage is 100% secure, and we cannot guarantee absolute security.
+                    </p>
+
+                    <h2 className="text-2xl font-semibold text-white pt-4">6. Your Data Rights</h2>
+                    <p>
+                        Depending on your location, you may have rights regarding your personal data, including the right to access, correct, or delete your information. You can update your account information through your profile settings or by contacting us.
                     </p>
                     
-                     <h2 className="text-2xl font-semibold text-white">5. Contact Us</h2>
+                    <h2 className="text-2xl font-semibold text-white pt-4">7. Cookie Policy</h2>
                     <p>
-                        If you have questions or comments about this Privacy Policy, please contact us at: privacy@africai.com
+                        We use cookies and similar tracking technologies to track activity on our Service and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.
+                    </p>
+
+                    <h2 className="text-2xl font-semibold text-white pt-4">8. Changes to This Policy</h2>
+                    <p>
+                        We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.
+                    </p>
+
+                    <h2 className="text-2xl font-semibold text-white pt-4">9. Contact Us</h2>
+                    <p>
+                        If you have any questions about this Privacy Policy, please contact us at <a href="mailto:privacy@africai.com" className="text-nebula-500 hover:underline">privacy@africai.com</a>.
                     </p>
                 </div>
             </GlassCard>

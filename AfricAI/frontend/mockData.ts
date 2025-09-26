@@ -116,6 +116,9 @@ generatedTutors.forEach(tutor => {
             id: `c${courseCounter}-${index + 1}`,
         }));
 
+        // Generate a proportional price in the new range R49–R99 based on chapter count
+        const raw = 49 + Math.min(50, Math.max(0, (courseChapters.length - 4) * 8));
+        const price = Math.min(99, Math.max(49, Math.round(raw)));
         const course: Course = {
             id: `${courseCounter}`,
             title,
@@ -123,7 +126,7 @@ generatedTutors.forEach(tutor => {
             category,
             imageUrl: `https://picsum.photos/seed/${courseCounter}/400/300`,
             chapters: courseChapters,
-            price: 149 + (courseChapters.length * (Math.floor(Math.random() * 50) + 25)),
+            price,
             rating: +(4.5 + Math.random() * 0.5).toFixed(1),
             reviews: Math.floor(300 + Math.random() * 1500),
             tutor: { ...tutor, courses: [], schedule: [] } // avoid circular reference for now
@@ -138,18 +141,36 @@ mockCourses.forEach((course, index) => {
     course.difficulty = difficulties[index % difficulties.length];
 });
 
-// Make one course free for filtering demonstration
-if (mockCourses.length > 2) {
-    mockCourses[2].price = 0;
-}
+// Normalize any outliers defensively to the new range
+mockCourses.forEach(c => { c.price = Math.min(99, Math.max(49, Math.round(c.price))); });
 
 
 export const mockTutors: Tutor[] = generatedTutors.map(tutor => {
     const assignedCourses = mockCourses.filter(c => c.tutor?.id === tutor.id);
-    const generateSchedule = (): LiveSession[] => [
-            { id: generateUniqueId(), title: `Live Q&A: ${assignedCourses[0]?.title || 'General Topics'}`, startTime: new Date(Date.now() + 1000 * 60 * 60 * (24 * (tutor.id.length % 7))), endTime: new Date(Date.now() + 1000 * 60 * 60 * (24 * (tutor.id.length % 7) + 1)), timezone: 'America/New_York', capacity: 30, bookedStudents: Array.from({ length: Math.floor(Math.random() * 30) }, () => `student_${Math.random()}`) },
-            { id: generateUniqueId(), title: 'Office Hours', startTime: new Date(Date.now() + 1000 * 60 * 60 * (24 * ((tutor.id.length + 3) % 7))), endTime: new Date(Date.now() + 1000 * 60 * 60 * (24 * ((tutor.id.length + 3) % 7) + 1)), timezone: 'Europe/London', capacity: 30, bookedStudents: Array.from({ length: Math.floor(Math.random() * 30) }, () => `student_${Math.random()}`) }
-        ];
+    const now = Date.now();
+    const generateSchedule = (): LiveSession[] => {
+        const liveSession: LiveSession = {
+            id: generateUniqueId(),
+            title: `Live Now: ${assignedCourses[0]?.title || 'General Topics'}`,
+            startTime: new Date(now - 10 * 60 * 1000), // started 10 min ago
+            endTime: new Date(now + 50 * 60 * 1000), // ends in 50 min
+            timezone: 'Africa/Johannesburg',
+            capacity: 50,
+            bookedStudents: Array.from({ length: Math.floor(10 + Math.random() * 30) }, () => `student_${Math.random()}`)
+        };
+
+        const upcomingSession: LiveSession = {
+            id: generateUniqueId(),
+            title: `Upcoming: ${assignedCourses[1]?.title || 'Office Hours'}`,
+            startTime: new Date(now + (2 + (tutor.id.length % 6)) * 60 * 60 * 1000), // 2-7 hours from now
+            endTime: new Date(now + (3 + (tutor.id.length % 6)) * 60 * 60 * 1000),
+            timezone: 'Africa/Johannesburg',
+            capacity: 50,
+            bookedStudents: Array.from({ length: Math.floor(Math.random() * 20) }, () => `student_${Math.random()}`)
+        };
+
+        return [liveSession, upcomingSession];
+    };
 
     return {
         ...tutor,

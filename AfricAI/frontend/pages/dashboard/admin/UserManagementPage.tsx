@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Table from '../shared/Table';
 import Button from '../../../components/Button';
 import UserModal from '../../../components/UserModal';
@@ -40,12 +40,39 @@ const generateMockUsers = (): User[] => {
 
 
 const UserManagementPage: React.FC = () => {
-    const [users, setUsers] = useState<User[]>(generateMockUsers());
+    const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch('/api/v1/profile/users');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch real users');
+                }
+                const realUsers = await response.json();
+                const mockUsers = generateMockUsers();
+
+                const realUserIds = new Set(realUsers.map((u: User) => u.id));
+                const filteredMockUsers = mockUsers.filter(u => !realUserIds.has(u.id));
+
+                setUsers([...realUsers, ...filteredMockUsers]);
+            } catch (error) {
+                console.error('Failed to fetch real users, falling back to mock data:', error);
+                setUsers(generateMockUsers());
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     const filteredUsers = useMemo(() => {
         if (!searchTerm) return users;
@@ -65,15 +92,52 @@ const UserManagementPage: React.FC = () => {
         setIsDeleteModalOpen(true);
     };
 
-    const handleSaveUser = (userData: User) => {
-        setUsers(users.map(u => (u.id === userData.id ? userData : u)));
+    const handleSaveUser = async (userData: User) => {
+        // If the user ID is a string that can't be converted to a number, it's a real user
+        if (isNaN(parseInt(userData.id))) {
+            try {
+                const response = await fetch(`/api/v1/profile/users/${userData.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData),
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to save user');
+                }
+                const savedUser = await response.json();
+                setUsers(users.map(u => (u.id === savedUser.id ? savedUser : u)));
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            // It's a mock user, just update the state
+            setUsers(users.map(u => (u.id === userData.id ? userData : u)));
+        }
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (userToDelete) {
-            setUsers(users.filter(u => u.id !== userToDelete.id));
-            setUserToDelete(null);
-            setIsDeleteModalOpen(false);
+            // If the user ID is a string that can't be converted to a number, it's a real user
+            if (isNaN(parseInt(userToDelete.id))) {
+                try {
+                    const response = await fetch(`/api/v1/profile/users/${userToDelete.id}`, {
+                        method: 'DELETE',
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to delete user');
+                    }
+                    setUsers(users.filter(u => u.id !== userToDelete.id));
+                    setUserToDelete(null);
+                    setIsDeleteModalOpen(false);
+                } catch (error) {
+                    console.error(error);
+                }
+            } else {
+                // It's a mock user, just update the state
+                setUsers(users.filter(u => u.id !== userToDelete.id));
+                setUserToDelete(null);
+                setIsDeleteModalOpen(false);
+            }
         }
     };
 

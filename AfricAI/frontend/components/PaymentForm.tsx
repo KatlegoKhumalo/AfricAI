@@ -50,7 +50,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, submitButtonText })
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-300">Expiry Date</label>
-                    <input type="text" id="expiryDate" name="expiryDate" value={values.expiryDate} onChange={handleChange} placeholder="MM/YY" required className={`mt-1 block w-full bg-white/5 border rounded-md py-2 px-3 text-sm focus:ring-2 focus:outline-none ${errors.expiryDate ? 'border-red-500 focus:ring-red-500' : 'border-white/10 focus:ring-nebula-600'}`} />
+                <input type="text" id="expiryDate" name="expiryDate" value={values.expiryDate} onChange={handleChange} placeholder="MM/YY" required className={`mt-1 block w-full dropdown-themed focus:ring-2 focus:outline-none ${errors.expiryDate ? 'border-red-500 focus:ring-red-500' : 'focus:ring-nebula-600'}`} />
                     {errors.expiryDate && <p className="text-red-400 text-xs mt-1">{errors.expiryDate}</p>}
                 </div>
                 <div>

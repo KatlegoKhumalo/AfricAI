@@ -1,26 +1,20 @@
 package com.project.app.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
 
+    // Accept either email or 7-digit tutorId
     @NotBlank
-    @Email
-    private String email;
+    private String identifier;
 
     @NotBlank
     private String password;
 
     // --- Getters and Setters ---
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getIdentifier() { return identifier; }
+    public void setIdentifier(String identifier) { this.identifier = identifier; }
 
     public String getPassword() {
         return password;

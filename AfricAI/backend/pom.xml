@@ -19,6 +19,12 @@
     </properties>
 
     <dependencies>
+        <!-- JWT for LiveKit token signing -->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>4.4.0</version>
+        </dependency>
         <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -78,6 +84,26 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Mail Sender -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- Google Generative AI -->
+        <dependency>
+            <groupId>dev.shreyaspatil.generativeai</groupId>
+            <artifactId>generativeai-google</artifactId>
+            <version>0.9.0-1.1.0</version>
         </dependency>
     </dependencies>
 

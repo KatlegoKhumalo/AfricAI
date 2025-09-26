@@ -12,6 +12,7 @@ import ChapterViewPage from './pages/ChapterViewPage';
 import FindTutorPage from './pages/FindTutorPage';
 import TutorProfilePage from './pages/TutorProfilePage';
 import AITutorPage from './pages/AITutorPage';
+import AfricAIPage from './pages/AfricAIPage';
 import CAIPage from './pages/CAIPage';
 import AuthPage from './pages/AuthPage';
 import SignUpPage from './pages/SignUpPage';
@@ -23,14 +24,17 @@ import DashboardLayout from './pages/dashboard/DashboardLayout';
 import LiveSessionPage from './pages/LiveSessionPage';
 import TutorOnboardingPaymentPage from './pages/TutorOnboardingPaymentPage';
 import TestPage from './pages/TestPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 const AppContent: React.FC = () => {
     const location = useLocation();
     const isLiveSession = location.pathname.startsWith('/live-session');
     const isTestPage = location.pathname.includes('/test');
+    const isAfricAIPage = location.pathname.startsWith('/africai');
     const isCAIPage = location.pathname.startsWith('/cai');
 
-    const shouldHideHeaderFooter = isLiveSession || isTestPage || isCAIPage;
+    const shouldHideHeaderFooter = isLiveSession || isTestPage || isAfricAIPage || isCAIPage;
 
     return (
         <div className="flex flex-col min-h-screen text-white font-sans">
@@ -46,6 +50,7 @@ const AppContent: React.FC = () => {
                     <Route path="/tutor/:tutorId" element={<TutorProfilePage />} />
                     <Route path="/ai-tutor" element={<AITutorPage />} />
                     <Route path="/cai" element={<CAIPage />} />
+                    <Route path="/africai" element={<AfricAIPage />} />
                     <Route path="/login" element={<AuthPage />} />
                     <Route path="/signup" element={<SignUpPage />} />
                     <Route path="/checkout/:courseId" element={<CheckoutPage />} />
@@ -54,6 +59,8 @@ const AppContent: React.FC = () => {
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/live-session/:sessionId" element={<LiveSessionPage />} />
                     <Route path="/tutor-onboarding/payment" element={<TutorOnboardingPaymentPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
                     <Route path="/dashboard/*" element={<DashboardLayout />} />
                 </Routes>
@@ -66,7 +73,7 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <AuthProvider>
-        <Router>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AppContent />
         </Router>
     </AuthProvider>

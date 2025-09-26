@@ -18,4 +18,9 @@ app:
   # --- Mocking Configuration ---
   # Set to 'true' to serve mock data from controllers instead of hitting the DB.
   # This is useful for frontend development without a running database.
-  use-mock-data: ${USE_MOCK_DATA:false}
+  use-mock-data: ${USE_MOCK_DATA:true}
+
+google:
+  gemini:
+    api:
+      key: ${GEMINI_API_KEY}

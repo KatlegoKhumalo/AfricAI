@@ -3,6 +3,7 @@ import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
 import { SendIcon } from './icons/SendIcon';
 import Button from './Button';
 import { MicIcon } from './icons/MicIcon';
+import { useSpeechToText } from '../hooks/useSpeechToText';
 
 declare global {
   interface Window {
@@ -26,6 +27,21 @@ const AITutor: React.FC = () => {
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // New: speech-to-text hook
+  const {
+    isSupported: sttSupported,
+    isRecording,
+    isPermissionDenied,
+    error: sttHookError,
+    start: startRecording,
+    stop: stopRecording,
+    resetError: resetSttError,
+  } = useSpeechToText({
+    onFinalResult: (text) => {
+      setPrompt((prev) => (prev ? prev + ' ' + text : text));
+    },
+  });
+
   useEffect(() => {
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -33,44 +49,31 @@ const AITutor: React.FC = () => {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // Step 1: Fetch API Key from backend
+  // Step 1: Read API Key from Vite env and gate behind sign-in
   useEffect(() => {
-    const fetchApiKey = async () => {
         setIsInitializing(true);
         setError(null);
         try {
-            // Get auth token from localStorage
             const user = JSON.parse(localStorage.getItem('africai-user') || '{}');
-            if (!user.id) {
-                throw new Error("User not authenticated");
-            }
+      if (!user?.id) {
+        setError('Please sign in to use the AI Tutor.');
+        setIsInitializing(false);
+        return;
+      }
 
-            // Fetch API key from backend
-            const response = await fetch('/api/v1/ai/get-api-key', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('africai-token')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            if (!data.apiKey) {
-                throw new Error("API key not available from server");
-            }
-            setApiKey(data.apiKey);
-        } catch(err) {
-            const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+      const envKey = (process.env.GEMINI_API_KEY || process.env.API_KEY) as string | undefined;
+      if (!envKey || !envKey.trim()) {
+        setError('AI Tutor is not configured. Missing GEMINI_API_KEY.');
+        setIsInitializing(false);
+        return;
+      }
+      setApiKey(envKey);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
             setError(`Failed to initialize AI Tutor: ${errorMessage}`);
             setIsInitializing(false);
             console.error(err);
         }
-    };
-
-    fetchApiKey();
   }, []);
 
   // Step 2: Initialize GoogleGenAI client when the key is available
@@ -94,41 +97,23 @@ const AITutor: React.FC = () => {
       }
   }, [apiKey]);
   
-  // Step 3: Initialize Speech Recognition
+  // Update internal UI error state based on hook
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        setSttError("Voice input is not supported by your browser.");
+    if (sttHookError) setSttError(sttHookError);
+    else setSttError(null);
+  }, [sttHookError]);
+
+  const handleListen = async () => {
+    setSttError(null);
+    try {
+      if (isRecording) {
+        stopRecording();
         return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
-
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = (event: any) => {
-        setSttError(`Voice input error: ${event.error}`);
-        setIsListening(false);
-    };
-    recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setPrompt(transcript);
-        setSttError(null);
-    };
-
-    recognitionRef.current = recognition;
-  }, []);
-
-  const handleListen = () => {
-      if (isListening || !recognitionRef.current) {
-          recognitionRef.current?.stop();
-          return;
       }
-      setSttError(null);
-      recognitionRef.current.start();
+      await startRecording();
+    } catch (e) {
+      setSttError('Network or microphone issue. Check connection and permissions.');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,8 +142,9 @@ const AITutor: React.FC = () => {
 
   const getPlaceholderText = () => {
       if (isInitializing) return "Initializing AI Tutor...";
-      if (error) return "AI Tutor is unavailable.";
-      if (isListening) return "Listening...";
+      if (error) return error;
+      if (sttError) return sttError;
+      if (isRecording) return "Listening...";
       return "e.g., Explain RAG in simple terms...";
   };
 
@@ -199,14 +185,15 @@ const AITutor: React.FC = () => {
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={getPlaceholderText()}
           className="flex-1 bg-white/5 border border-white/10 rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-nebula-600 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isLoading || isInitializing}
+          disabled={isLoading || isInitializing || !!error}
         />
-        {recognitionRef.current && (
+        {sttSupported && (
              <Button type="button" variant="secondary" onClick={handleListen} disabled={isInitializing} aria-label="Use microphone">
-                <MicIcon className={`w-5 h-5 ${isListening ? 'text-red-400 animate-pulse' : ''}`} />
+            <MicIcon className={`w-5 h-5 ${isRecording ? 'text-red-400 animate-pulse' : ''}`} />
              </Button>
         )}
-        <Button type="submit" variant="primary" disabled={isLoading || !prompt.trim() || isInitializing} aria-label="Send message">
+
+        <Button type="submit" variant="primary" disabled={isLoading || !prompt.trim() || isInitializing || !!error} aria-label="Send message">
           <SendIcon className="w-5 h-5" />
         </Button>
       </form>

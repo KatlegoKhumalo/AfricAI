@@ -23,12 +23,15 @@ import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';
 import MyCoursesPage from './MyCoursesPage';
 import LearnerAnalyticsPage from './learner/LearnerAnalyticsPage';
-import TeacherCourseCreatePage from './TeacherCourseCreatePage';
+import LearnerBillingPage from './learner/BillingPage';
+import CreateCoursePage from './tutor/CreateCoursePage';
 import TutorAnalyticsPage from './tutor/TutorAnalyticsPage';
 import SchedulePage from './tutor/SchedulePage';
 import MyStudentsPage from './tutor/MyStudentsPage';
 import EarningsPage from './tutor/EarningsPage';
 import BillingPage from './tutor/BillingPage';
+import TutorMyCoursesPage from './tutor/MyCoursesPage';
+import EditCoursePage from './tutor/EditCoursePage';
 import AdminAnalyticsPage from './admin/AdminAnalyticsPage';
 import UserManagementPage from './admin/UserManagementPage';
 import CourseManagementPage from './admin/CourseManagementPage';
@@ -53,10 +56,12 @@ const DashboardLayout: React.FC = () => {
     const learnerLinks = [
         { to: '/dashboard/my-courses', label: 'My Courses', icon: BookOpenIcon },
         { to: '/dashboard/analytics', label: 'My Progress', icon: BarChartIcon },
+        { to: '/dashboard/billing', label: 'Billing', icon: ReceiptIcon },
     ];
     
     const tutorLinks = [
         { to: '/dashboard/tutor/analytics', label: 'Analytics', icon: BarChartIcon },
+        { to: '/dashboard/tutor/my-courses', label: 'My Courses', icon: BookOpenIcon },
         { to: '/dashboard/tutor/create-course', label: 'Create Course', icon: PlusCircleIcon },
         { to: '/dashboard/tutor/schedule', label: 'My Schedule', icon: CalendarIcon },
         { to: '/dashboard/tutor/students', label: 'My Students', icon: UsersIcon },
@@ -79,7 +84,7 @@ const DashboardLayout: React.FC = () => {
 
     const handleLogoutAndRedirect = () => {
         logout();
-        navigate('/login');
+        navigate('/');
     };
 
     return (
@@ -111,9 +116,12 @@ const DashboardLayout: React.FC = () => {
                         {/* Learner */}
                         <Route path="my-courses" element={<MyCoursesPage />} />
                         <Route path="analytics" element={<LearnerAnalyticsPage />} />
+                        <Route path="billing" element={<LearnerBillingPage />} />
                         {/* Tutor */}
                         <Route path="tutor/analytics" element={<TutorAnalyticsPage />} />
-                        <Route path="tutor/create-course" element={<TeacherCourseCreatePage />} />
+                        <Route path="tutor/my-courses" element={<TutorMyCoursesPage />} />
+                        <Route path="tutor/edit-course/:courseId" element={<EditCoursePage />} />
+                        <Route path="tutor/create-course" element={<CreateCoursePage />} />
                         <Route path="tutor/schedule" element={<SchedulePage />} />
                         <Route path="tutor/students" element={<MyStudentsPage />} />
                         <Route path="tutor/earnings" element={<EarningsPage />} />

@@ -22,7 +22,9 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
         <StarRating rating={tutor.rating} />
         <span className="text-xs text-gray-400">({tutor.reviews} reviews)</span>
       </div>
-      <p className="text-gray-400 text-sm flex-grow mb-4">{tutor.bio.substring(0, 100)}...</p>
+      <p className="text-gray-400 text-sm flex-grow mb-4">
+        {typeof tutor.bio === 'string' ? `${tutor.bio.substring(0, 100)}...` : ''}
+      </p>
       <Button variant="secondary" className="w-full">View Profile</Button>
     </GlassCard>
   );

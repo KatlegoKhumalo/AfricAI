@@ -5,11 +5,13 @@ import com.project.app.model.UserRole;
 import com.project.app.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@ConditionalOnProperty(name = "app.use-mock-data", havingValue = "false", matchIfMissing = true)
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;

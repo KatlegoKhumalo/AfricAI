@@ -34,19 +34,45 @@ const SignUpPage: React.FC = () => {
                     },
                     body: JSON.stringify({
                         name: formValues.name,
-                        email: formValues.email,
+                        email: formValues.email.trim().toLowerCase(),
                         password: formValues.password,
-                        role: role
+                        role: role.toUpperCase()
                     })
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Signup failed');
+                    let message = `Signup failed (${response.status})`;
+                    const text = await response.text();
+                    try {
+                        const maybeJson = text ? JSON.parse(text) : null;
+                        if (maybeJson && (maybeJson.error || maybeJson.message)) {
+                            message = maybeJson.error || maybeJson.message;
+                        }
+                    } catch (_) {
+                        // not JSON; keep default message
+                    }
+                    throw new Error(message);
                 }
 
-                const data = await response.json();
-                login(data.user, data.token);
+                const data = await response.json().catch(() => ({} as any));
+                const token = (data as any).accessToken || (data as any).token;
+                if (!token) {
+                    throw new Error('Signup succeeded but no token was returned.');
+                }
+
+                // Fetch current user profile using the token
+                const meRes = await fetch('/api/v1/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!meRes.ok) {
+                    throw new Error('Failed to fetch user profile.');
+                }
+                const me = await meRes.json();
+                // Normalize role for UI: backend returns enum (LEARNER/TUTOR)
+                if (me && me.role) me.role = String(me.role).toLowerCase();
+                login(me, token);
                 navigate('/dashboard');
             } catch (error) {
                 console.error('Signup error:', error);

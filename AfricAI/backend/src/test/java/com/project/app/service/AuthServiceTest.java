@@ -60,7 +60,7 @@ class AuthServiceTest {
 
     @Test
     void register_Success() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(jwtUtil.generateToken(any())).thenReturn("test-token");
@@ -74,7 +74,7 @@ class AuthServiceTest {
 
     @Test
     void register_EmailAlreadyExists_ThrowsException() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase(anyString())).thenReturn(Optional.of(user));
 
         assertThrows(IllegalStateException.class, () -> authService.register(signUpRequest));
         verify(userRepository, never()).save(any(User.class));
@@ -83,7 +83,7 @@ class AuthServiceTest {
     @Test
     void login_Success() {
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("test@example.com");
+        loginRequest.setIdentifier("test@example.com");
         loginRequest.setPassword("password");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))

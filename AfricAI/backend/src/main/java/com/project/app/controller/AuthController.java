@@ -1,13 +1,12 @@
 package com.project.app.controller;
 
-import com.project.app.dto.AuthResponse;
-import com.project.app.dto.LoginRequest;
-import com.project.app.dto.SignUpRequest;
-import com.project.app.dto.UserDto;
+import com.project.app.dto.*;
 import com.project.app.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -40,5 +39,17 @@ public class AuthController {
             return ResponseEntity.status(401).build(); // Unauthorized
         }
         return ResponseEntity.ok(currentUser);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        authService.forgotPassword(body.get("email"));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request.getToken(), request.getPassword());
+        return ResponseEntity.ok().build();
     }
 }

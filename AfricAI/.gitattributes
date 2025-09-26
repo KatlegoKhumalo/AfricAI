@@ -1,0 +1,40 @@
+# Set default text file handling
+* text=auto
+
+# Normalize all source code line endings to LF
+*.py text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.env text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+
+# Binary files - prevent line-ending conversions
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.7z binary
+*.mp4 binary
+*.mp3 binary
+*.ogg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

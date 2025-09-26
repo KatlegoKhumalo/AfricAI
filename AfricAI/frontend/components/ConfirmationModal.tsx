@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import GlassCard from './GlassCard';
 import Button from './Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,11 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (password?: string) => void;
   title: string;
   message: string;
   confirmText?: string;
   cancelText?: string;
+  requiresPassword?: boolean;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ 
@@ -20,8 +21,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   title, 
   message,
   confirmText = "Confirm",
-  cancelText = "Cancel"
+  cancelText = "Cancel",
+  requiresPassword = false
 }) => {
+  const [password, setPassword] = useState('');
+
+  const handleConfirm = () => {
+    onConfirm(requiresPassword ? password : undefined);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -45,11 +53,23 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             <GlassCard className="p-8">
               <h2 className="text-2xl font-bold mb-4">{title}</h2>
               <p className="text-gray-300 mb-6">{message}</p>
+              {requiresPassword && (
+                <div className="mb-4">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-300">Please enter your password to confirm</label>
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1 block w-full bg-white/5 border border-white/10 rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-nebula-600 focus:outline-none"
+                  />
+                </div>
+              )}
               <div className="flex justify-end space-x-4">
                 <Button variant="secondary" onClick={onClose}>
                   {cancelText}
                 </Button>
-                <Button variant="primary" onClick={onConfirm} className="bg-red-600 hover:bg-red-500 focus:ring-red-500">
+                <Button variant="primary" onClick={handleConfirm} className="bg-red-600 hover:bg-red-500 focus:ring-red-500">
                   {confirmText}
                 </Button>
               </div>

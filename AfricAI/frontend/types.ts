@@ -73,9 +73,6 @@ export interface Tutor {
     bio: string;
     rating: number;
     reviews: number;
-    courses: Course[];
-    schedule: LiveSession[];
-    subscription: TutorSubscription;
     verified?: boolean;
     joinDate: Date;
 }
@@ -102,6 +99,7 @@ export interface User {
     verified?: boolean;
     joinDate: Date;
     paymentMethod?: PaymentMethod;
+    enrolledCourses?: string[];
 }
 
 export interface Invoice {

@@ -3,6 +3,7 @@ import type { Course } from '../types';
 import StarRating from './StarRating';
 import GlassCard from './GlassCard';
 import Pill from './Pill';
+import { formatRand } from '../utils/currency';
 
 interface CourseCardProps {
   course: Course;
@@ -29,7 +30,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
                     Score: {score}%
                 </Pill>
             ) : (
-                 <span className="font-bold text-lg">R{price.toFixed(2)}</span>
+                 <span className="font-bold text-lg">{formatRand(price)}</span>
             )}
         </div>
         {progress !== undefined && (

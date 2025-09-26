@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { mockTutors } from '../mockData';
+import { listMergedTutors } from '../services/tutorService';
+import { useAuth } from '../context/AuthContext';
 import TutorCard from '../components/TutorCard';
 import TutorCardSkeleton from '../components/TutorCardSkeleton';
 import { SearchIcon } from '../components/icons/SearchIcon';
@@ -13,30 +15,40 @@ const FindTutorPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSpecialty, setSelectedSpecialty] = useState('All');
     const [searchTerm, setSearchTerm] = useState('');
+    const [minRating, setMinRating] = useState(0);
+    const { user } = useAuth();
     
     useEffect(() => {
-        setIsLoading(true);
-        const timer = setTimeout(() => {
-            setTutors(mockTutors);
-            setIsLoading(false);
-        }, 1500);
-        return () => clearTimeout(timer);
-    }, []);
+        const fetchTutors = async () => {
+            setIsLoading(true);
+            try {
+                const merged = await listMergedTutors(user || null);
+                setTutors(merged);
+            } catch (error) {
+                console.error('Failed to load tutors, falling back to mock data:', error);
+                setTutors(mockTutors);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTutors();
+    }, [user]);
 
     const filteredTutors = useMemo(() => {
         if (isLoading) return [];
         return tutors.filter(tutor => {
-            const specialtyMatch = selectedSpecialty === 'All' || 
-                tutor.courses.some(c => c.category === selectedSpecialty);
-            const searchMatch = tutor.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                tutor.title.toLowerCase().includes(searchTerm.toLowerCase());
-            return specialtyMatch && searchMatch;
+            const searchMatch = tutor.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const ratingMatch = (tutor.rating || 0) >= minRating;
+            return searchMatch && ratingMatch;
         });
-    }, [selectedSpecialty, searchTerm, tutors, isLoading]);
+    }, [searchTerm, tutors, isLoading, minRating]);
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-4xl font-bold text-center mb-4">Find Your Expert Tutor</h1>
+        <div className="text-center mb-6">
+                <h1 className="text-4xl font-bold">Find a Tutor</h1>
+            </div>
             <p className="text-gray-400 text-center mb-10 max-w-2xl mx-auto">
                 Connect with our world-class tutors. Browse by specialty or search for an expert to help you achieve your learning goals.
             </p>

@@ -1,13 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { GoogleGenAI, Part } from "@google/genai";
-
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-    ImageCapture: any;
-  }
-}
+import { Room, Track, LocalVideoTrack } from 'livekit-client';
 
 export interface Message {
     speaker: 'you' | 'ai';
@@ -28,19 +20,7 @@ export enum AgentState {
     SPEAKING,
 }
 
-const findBestVoice = (): SpeechSynthesisVoice | null => {
-    const voices = window.speechSynthesis.getVoices();
-    if (!voices.length) return null;
-    
-    const preferredVoices = ["Zoe", "Samantha", "Google US English", "Victoria"];
-    
-    for (const name of preferredVoices) {
-        const voice = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
-        if (voice) return voice;
-    }
-    
-    return voices.find(v => v.lang.startsWith('en-US')) || voices.find(v => v.lang.startsWith('en')) || null;
-};
+// Browser TTS is intentionally disabled when connected to LiveKit to avoid double audio
 
 const CAI_SYSTEM_INSTRUCTION = `You are CAI, a friendly, warm, and highly advanced conversational AI with a feminine persona. Your voice is natural and engaging, not robotic.
 
@@ -73,10 +53,10 @@ export const useCAI = () => {
     const [agentState, _setAgentState] = useState(AgentState.IDLE);
     const [transcript, setTranscript] = useState<Message[]>([]);
     const [isMicActive, setIsMicActive] = useState(false);
-
-    const aiRef = useRef<GoogleGenAI | null>(null);
     const recognitionRef = useRef<any | null>(null);
-    const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+    const roomRef = useRef<Room | null>(null);
+    const publishedVideoTrackRef = useRef<LocalVideoTrack | null>(null);
+    const selectedVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
     const agentStateRef = useRef(agentState);
     const videoStreamRef = useRef<MediaStream | null>(null);
     const conversationHistoryRef = useRef<Message[]>([]);
@@ -92,171 +72,7 @@ export const useCAI = () => {
         setTranscript([...conversationHistoryRef.current]);
     }, []);
 
-    const updateLastMessage = useCallback((textChunk: string) => {
-        const lastMsgIndex = conversationHistoryRef.current.length - 1;
-        if (lastMsgIndex >= 0 && conversationHistoryRef.current[lastMsgIndex].speaker === 'ai') {
-            conversationHistoryRef.current[lastMsgIndex].text += textChunk;
-            setTranscript([...conversationHistoryRef.current]);
-        }
-    }, []);
-
-    const speak = useCallback((text: string) => {
-        if (!text.trim()) {
-            const fallbackText = "I'm sorry, I didn't catch that. Could you please repeat it?";
-            addMessage('ai', fallbackText);
-            // Recursively call speak to say the fallback message.
-            // A small timeout can prevent potential rapid-fire loops if the API consistently returns empty strings.
-            setTimeout(() => speak(fallbackText), 100);
-            return;
-        }
-
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (voiceRef.current) {
-            utterance.voice = voiceRef.current;
-            utterance.rate = 1.05;
-            utterance.pitch = 1.1;
-        }
-        utterance.onstart = () => setAgentState(AgentState.SPEAKING);
-        utterance.onend = () => {
-            if (agentStateRef.current === AgentState.SPEAKING) {
-                if (isMicActive) {
-                    setAgentState(AgentState.LISTENING);
-                } else {
-                    setAgentState(AgentState.IDLE);
-                }
-            }
-        };
-        utterance.onerror = (e) => {
-            if (e.error !== 'interrupted') console.error('Speech synthesis error:', e.error);
-             setAgentState(AgentState.IDLE);
-        };
-        window.speechSynthesis.speak(utterance);
-    }, [isMicActive, setAgentState, addMessage]);
-
-    const startListening = useCallback(() => {
-        if (recognitionRef.current) {
-            try {
-                recognitionRef.current.start();
-            } catch (err: any) {
-                if (err.name !== 'InvalidStateError') {
-                    console.error('Speech recognition start error:', err);
-                     if (agentStateRef.current === AgentState.LISTENING) {
-                        setAgentState(AgentState.IDLE); // Go to idle on error
-                    }
-                }
-            }
-        }
-    }, [setAgentState]);
-
-    const stopListening = useCallback(() => {
-        if (recognitionRef.current) {
-            try {
-                recognitionRef.current.stop();
-            } catch (err) {
-                // Ignore errors, likely already stopped.
-            }
-        }
-    }, []);
-    
-    const captureFrame = useCallback(async (): Promise<string | null> => {
-        const stream = videoStreamRef.current;
-        if (!stream?.active) return null;
-        const videoTrack = stream.getVideoTracks()[0];
-        if (!videoTrack) return null;
-
-        try {
-            const imageCapture = new window.ImageCapture(videoTrack);
-            const blob = await imageCapture.takePhoto();
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result?.toString().split(',')[1] || null);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        } catch (error) {
-            console.error("Could not capture frame:", error);
-            return null;
-        }
-    }, []);
-
-    const processUserInput = useCallback(async (text: string) => {
-        if (!text.trim() || !aiRef.current) {
-            if (isMicActive) setAgentState(AgentState.LISTENING);
-            return;
-        }
-        addMessage('you', text);
-        setAgentState(AgentState.PROCESSING);
-        
-        try {
-            const frame = await captureFrame();
-            const history = conversationHistoryRef.current.slice(0, -1).map(msg => ({
-                role: msg.speaker === 'you' ? 'user' : 'model',
-                parts: [{ text: msg.text }]
-            }));
-
-            const userParts: Part[] = [{ text }];
-            if (frame) {
-                userParts.push({ inlineData: { mimeType: 'image/jpeg', data: frame } });
-            }
-            
-            const contents = [...history, { role: 'user', parts: userParts }];
-
-            const stream = await aiRef.current.models.generateContentStream({
-                model: 'gemini-2.5-flash',
-                contents,
-                config: { systemInstruction: CAI_SYSTEM_INSTRUCTION }
-            });
-            
-            let fullResponse = "";
-            let firstChunk = true;
-            for await (const chunk of stream) {
-                const chunkText = chunk.text;
-                if (chunkText) {
-                    if (firstChunk) {
-                        addMessage('ai', chunkText);
-                        firstChunk = false;
-                    } else {
-                        updateLastMessage(chunkText);
-                    }
-                    fullResponse += chunkText;
-                }
-            }
-            speak(fullResponse);
-
-        } catch (error) {
-            console.error("Gemini API error:", error);
-            const errorMsg = "I'm sorry, I encountered a problem. Could you please say that again?";
-            addMessage('ai', errorMsg);
-            speak(errorMsg);
-        }
-
-    }, [captureFrame, speak, setAgentState, addMessage, updateLastMessage, isMicActive]);
-
-     // Central effect to manage microphone state based on agent state
-    useEffect(() => {
-        const recognition = recognitionRef.current;
-        if (!recognition) return;
-
-        const handleRecognitionEnd = () => {
-            if (agentStateRef.current === AgentState.LISTENING) {
-                startListening();
-            }
-        };
-
-        recognition.addEventListener('end', handleRecognitionEnd);
-
-        if (agentState === AgentState.LISTENING) {
-            startListening();
-        } else {
-            stopListening();
-        }
-
-        return () => {
-            recognition.removeEventListener('end', handleRecognitionEnd);
-        };
-    }, [agentState, startListening, stopListening]);
-
+    // Browser STT disabled; LiveKit handles voice capture on the server side
 
     const connect = useCallback(async (userName: string) => {
         setConnectionState(ConnectionState.CONNECTING);
@@ -264,100 +80,99 @@ export const useCAI = () => {
         setTranscript([]);
 
         try {
-            // Request permission early. This is a crucial user interaction.
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop()); // We only needed permission, not the stream itself yet.
-            
-            // Get API key from backend
-            const token = localStorage.getItem('africai-token');
-            if (!token) throw new Error("User not authenticated");
-            
-            const response = await fetch('/api/v1/ai/get-api-key', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+            const identity = userName || 'guest';
+            const roomName = 'cai';
+            const tokenServer = (import.meta as any).env?.VITE_CAI_TOKEN_URL || 'http://localhost:8001/token';
+            const url = new URL(tokenServer);
+            url.searchParams.set('room', roomName);
+            url.searchParams.set('participant', identity);
+            const resp = await fetch(url.toString());
+            if (!resp.ok) throw new Error('Token server error');
+            const data = await resp.json();
+
+            const { token, url: wsUrl } = data as { token: string; url: string };
+            const room = new Room();
+            room.on('trackSubscribed', (track) => {
+                if (track.kind === Track.Kind.Audio) {
+                    const mediaStream = new MediaStream([track.mediaStreamTrack]);
+                    const audioEl = new Audio();
+                    audioEl.srcObject = mediaStream;
+                    audioEl.autoplay = true;
+                    audioEl.play().catch(() => {});
                 }
             });
-            
-            if (!response.ok) {
-                throw new Error("Failed to get API key");
-            }
-            
-            const data = await response.json();
-            const apiKey = data.apiKey;
-            if (!apiKey) throw new Error("API_KEY not found.");
-            aiRef.current = new GoogleGenAI({ apiKey });
-            
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) throw new Error("Speech Recognition not supported.");
-            
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = false;
-            recognitionRef.current.interimResults = false;
-            recognitionRef.current.lang = 'en-US';
-            
-            recognitionRef.current.onresult = (event: any) => {
-                setAgentState(AgentState.PROCESSING);
-                const userTranscript = event.results[0][0].transcript;
-                processUserInput(userTranscript);
-            };
-            
-            recognitionRef.current.onerror = (event: any) => {
-                if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                    console.error('Speech recognition error:', event.error);
-                }
-            };
-            
-            const loadVoices = () => { voiceRef.current = findBestVoice(); };
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-            loadVoices();
+            await room.connect(wsUrl, token);
+            roomRef.current = room;
 
             setConnectionState(ConnectionState.CONNECTED);
-            setIsMicActive(true);
-            
-            const welcomeMessage = `Hello ${userName}, I'm CAI, your personal educational assistant from AfricAI. It's great to connect with you. How can I help you learn today?`;
-            addMessage('ai', welcomeMessage);
-            speak(welcomeMessage);
-
-        } catch (error) {
-            console.error("CAI Connection failed:", error);
+            addMessage('ai', 'Connected to CAI. Toggle the mic to speak.');
+        } catch (e) {
+            console.error('CAI connect failed', e);
             setConnectionState(ConnectionState.FAILED);
-            // Show user-friendly error message
-            const errorMsg = "I'm having trouble connecting right now. Please make sure you're logged in and try again.";
-            addMessage('ai', errorMsg);
+            addMessage('ai', 'Connection failed. Ensure the CAI token server and LiveKit worker are running.');
         }
-    }, [processUserInput, setAgentState, addMessage, speak]);
+    }, [addMessage]);
 
     const disconnect = useCallback(() => {
-        window.speechSynthesis.cancel();
+        if (recognitionRef.current) {
+            try { recognitionRef.current.stop(); } catch {}
+            recognitionRef.current = null;
+        }
+        if (roomRef.current) {
+            try { roomRef.current.disconnect(); } catch {}
+            roomRef.current = null;
+        }
+        setConnectionState(ConnectionState.DISCONNECTED);
         setAgentState(AgentState.IDLE);
-        stopListening();
-        aiRef.current = null;
+        setIsMicActive(false);
         if (videoStreamRef.current) {
             videoStreamRef.current.getTracks().forEach(track => track.stop());
             videoStreamRef.current = null;
         }
-        setConnectionState(ConnectionState.DISCONNECTED);
-        setIsMicActive(false);
-    }, [setAgentState, stopListening]);
-    
+    }, [setAgentState]);
+
     const toggleMic = useCallback(() => {
         const nextState = !isMicActive;
         setIsMicActive(nextState);
-        if (connectionState === ConnectionState.CONNECTED) {
-            if (nextState) {
-                // If we are turning the mic on, immediately go to listening state
-                window.speechSynthesis.cancel(); // Interrupt any ongoing speech
-                setAgentState(AgentState.LISTENING);
-            } else {
-                // If we are turning it off, go to idle
-                setAgentState(AgentState.IDLE);
-            }
+        if (connectionState !== ConnectionState.CONNECTED) {
+            setAgentState(nextState ? AgentState.LISTENING : AgentState.IDLE);
+            return;
         }
+        if (roomRef.current) {
+            try {
+                roomRef.current.localParticipant.setMicrophoneEnabled(nextState);
+            } catch {}
+        }
+        setAgentState(nextState ? AgentState.LISTENING : AgentState.IDLE);
     }, [isMicActive, connectionState, setAgentState]);
 
-    const setVideoStream = (stream: MediaStream | null) => {
+    const setVideoStream = async (stream: MediaStream | null) => {
         videoStreamRef.current = stream;
+        const room = roomRef.current;
+        if (!room) return;
+
+        try {
+            // Unpublish any previous camera track
+            if (publishedVideoTrackRef.current) {
+                try {
+                    room.localParticipant.unpublishTrack(publishedVideoTrackRef.current, true);
+                } catch {}
+                try { publishedVideoTrackRef.current.stop(); } catch {}
+                publishedVideoTrackRef.current = null;
+            }
+
+            // Publish the new stream (if provided)
+            if (stream) {
+                const mediaTrack = stream.getVideoTracks()[0];
+                if (mediaTrack) {
+                    const localVideo = new LocalVideoTrack(mediaTrack);
+                    await room.localParticipant.publishTrack(localVideo, { simulcast: false });
+                    publishedVideoTrackRef.current = localVideo;
+                }
+            }
+        } catch (e) {
+            console.error('Video publish/unpublish failed', e);
+        }
     };
 
     return {

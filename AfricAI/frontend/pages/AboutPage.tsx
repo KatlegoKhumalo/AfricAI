@@ -3,9 +3,30 @@ import GlassCard from '../components/GlassCard';
 import AnimatedText from '../components/AnimatedText';
 
 const teamMembers = [
-  { name: 'Dr. Aisha Bello', role: 'Founder & CEO', avatar: 'https://i.pravatar.cc/150?u=aisha' },
-  { name: 'David Kim', role: 'Head of Curriculum', avatar: 'https://i.pravatar.cc/150?u=david' },
-  { name: 'Chinedu Okafor', role: 'Lead AI Engineer', avatar: 'https://i.pravatar.cc/150?u=chinedu' },
+  {
+    name: 'Katlego William Khumalo',
+    role: 'CEO · Team Lead · Frontend Developer & Backend Integration',
+    avatar: '/assets/images/william.jpg',
+    bio: 'Sets vision and product direction; crafts user‑first experiences with seamless backend integration.'
+  },
+    {
+    name: 'Njabulo Garry Mazibuko',
+    role: 'COO · Backend Architect · QA',
+    avatar: '/assets/images/njabulo.jpg',
+    bio: 'Oversees daily operations, backend architecture, and quality to deliver a robust, high‑performing platform.'
+  },
+  {
+    name: 'Botlhlale Tumelo Mphai',
+    role: 'CSO · Backend Developer · DevOps Lead',
+    avatar: '/assets/images/botlhale.jpg',
+    bio: 'Leads strategy, scaling, and DevOps to ensure reliability, security, and growth across AfricAI services.'
+  },
+  {
+    name: 'Ayabulela Jilimba',
+    role: 'CFO · Creative Director · Legal · Backend Developer',
+    avatar: '/assets/images/ayabulela.jpg',
+    bio: 'Drives financial strategy and creative direction while ensuring legal compliance and contributing to backend development.'
+  }
 ];
 
 const AboutPage: React.FC = () => {
@@ -34,16 +55,54 @@ const AboutPage: React.FC = () => {
             </section>
 
             <section>
-                <h2 className="text-4xl font-bold text-center mb-12">Meet the Team</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                 <GlassCard className="p-8 text-center">
+                    <h2 className="text-3xl font-bold mb-4">Our Vision</h2>
+                    <p className="text-gray-300 max-w-3xl mx-auto">
+                        We envision a world where knowledge is a currency for growth, not a barrier. Our goal is to be the leading catalyst for technological empowerment, creating a global ecosystem of learners, creators, and innovators who are equipped to solve the challenges of tomorrow. We see a future where your location does not determine your access to world-class education.
+                    </p>
+                </GlassCard>
+            </section>
+
+            <section>
+                <h2 className="text-4xl font-bold text-center mb-12">Meet the AfricAI Team</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                     {teamMembers.map(member => (
-                        <GlassCard key={member.name} className="p-6 text-center">
-                            <img src={member.avatar} alt={member.name} className="w-24 h-24 rounded-full mx-auto mb-4" />
-                            <h3 className="font-bold text-lg">{member.name}</h3>
-                            <p className="text-nebula-600">{member.role}</p>
+                        <GlassCard key={member.name} className="p-0 overflow-hidden transition-all duration-300 hover:bg-white/10 hover:scale-[1.01]">
+                            <div className="flex flex-col h-full">
+                                <div className="w-full aspect-[4/5] bg-black/20">
+                                    <img
+                                        src={member.avatar}
+                                        alt={member.name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            const el = e.currentTarget as HTMLImageElement;
+                                            // Fallback to a deterministic picsum image like course covers
+                                            const seed = encodeURIComponent(member.name.replace(/\s+/g, '-').toLowerCase());
+                                            el.src = `https://picsum.photos/seed/${seed}/600/750`;
+                                        }}
+                                    />
+                                </div>
+                                <div className="p-6">
+                                    <h3 className="text-2xl font-bold mb-1">{member.name}</h3>
+                                    <p className="text-nebula-500 font-semibold mb-3 leading-snug">{member.role}</p>
+                                    <p className="text-gray-300 text-sm leading-relaxed">{member.bio}</p>
+                                </div>
+                            </div>
                         </GlassCard>
                     ))}
                 </div>
+            </section>
+
+            <section className="text-center">
+                 <GlassCard className="p-10">
+                    <h2 className="text-3xl font-bold mb-4">Join Our Community</h2>
+                    <p className="max-w-3xl mx-auto text-lg text-gray-300 mb-8">
+                        Whether you're starting your journey or looking to advance your skills, you have a place at AfricAI. Explore our courses, connect with tutors, and become part of a vibrant community dedicated to lifelong learning and innovation.
+                    </p>
+                    <a href="/courses" className="bg-gradient-to-r from-nebula-600 to-nebula-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-transform hover:scale-105 inline-block">
+                        Explore Courses
+                    </a>
+                </GlassCard>
             </section>
         </div>
     );

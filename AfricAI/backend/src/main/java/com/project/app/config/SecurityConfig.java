@@ -30,11 +30,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/v1/auth/**",
+                                "/api/v1/ai/**",
+                                "/api/v1/livekit/**",
+                                "/error",
                                 "/api/dev/**", // Dev endpoints for seeding
                                 "/v3/api-docs/**", // Swagger
                                 "/swagger-ui/**"   // Swagger
                         ).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/profile/tutors").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

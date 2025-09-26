@@ -3,6 +3,7 @@ import { useAuth } from '../../../context/AuthContext';
 import GlassCard from '../../../components/GlassCard';
 import Button from '../../../components/Button';
 import { mockTutors, generateUniqueId } from '../../../mockData';
+import { useSchedule, addSession, updateSession, removeSession } from '../../../utils/scheduleStore';
 import { PlusCircleIcon } from '../../../components/icons/PlusCircleIcon';
 import SessionModal from '../../../components/SessionModal';
 import ConfirmationModal from '../../../components/ConfirmationModal';
@@ -10,10 +11,9 @@ import type { LiveSession } from '../../../types';
 
 const SchedulePage: React.FC = () => {
     const { user } = useAuth();
-    const tutorData = mockTutors.find(t => t.id === user?.id);
+    const tutorData = mockTutors.find(t => t.id === user?.id) as any;
 
-    // State for managing schedule, modals, and session data
-    const [schedule, setSchedule] = useState<LiveSession[]>(tutorData?.schedule || []);
+    const { sessions: schedule, loading: isLoadingSchedule } = useSchedule(user?.id);
     const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedSession, setSelectedSession] = useState<LiveSession | null>(null);
@@ -36,20 +36,31 @@ const SchedulePage: React.FC = () => {
     };
 
     // Handler for saving a session (create or update)
-    const handleSaveSession = (sessionData: LiveSession) => {
+    const handleSaveSession = (sessionData: Omit<LiveSession, 'id' | 'bookedStudents' | 'capacity'>) => {
+        if (!user) return;
+
+        const sessionToSave = {
+            title: sessionData.title,
+            description: sessionData.description,
+            startAt: sessionData.startTime.toISOString(),
+            endAt: sessionData.endTime.toISOString(),
+            tutorId: user.id,
+            roomId: `room_${selectedSession?.id || generateUniqueId()}`,
+        };
+
         if (selectedSession) {
             // Update existing session
-            setSchedule(schedule.map(s => s.id === sessionData.id ? sessionData : s));
+            updateSession(selectedSession.id, sessionToSave);
         } else {
             // Add new session
-            setSchedule([...schedule, { ...sessionData, id: generateUniqueId() }]);
+            addSession(sessionToSave);
         }
     };
     
     // Handler for confirming deletion
     const confirmDelete = () => {
         if (sessionToDelete) {
-            setSchedule(schedule.filter(s => s.id !== sessionToDelete.id));
+            removeSession(sessionToDelete.id);
             setSessionToDelete(null);
             setIsDeleteModalOpen(false);
         }

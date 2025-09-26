@@ -5,7 +5,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const Button: React.FC<ButtonProps> = ({ children, className, variant = 'primary', size = 'md', ...props }) => {
+const Button: React.FC<ButtonProps> = ({ children, className, variant = 'primary', size = 'md', type = 'button', ...props }) => {
   // FIX: Add size prop to control button padding and text size, resolving type errors.
   const baseClasses = 'rounded-md font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed shadow-lg';
 
@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({ children, className, variant = 'primary
   const combinedClasses = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className || ''}`;
 
   return (
-    <button className={combinedClasses} {...props}>
+    <button type={type} className={combinedClasses} {...props}>
       {children}
     </button>
   );

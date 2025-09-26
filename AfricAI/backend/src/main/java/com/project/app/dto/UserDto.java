@@ -3,6 +3,7 @@ package com.project.app.dto;
 import com.project.app.model.UserRole;
 
 import java.util.Date;
+import java.util.List;
 
 public class UserDto {
 
@@ -12,9 +13,11 @@ public class UserDto {
     private String email;
     private String avatarUrl;
     private UserRole role;
+    private String tutorId;
     private String bio;
     private boolean verified;
     private Date joinDate;
+    private List<String> enrolledCourses;
 
     // --- Getters and Setters ---
 
@@ -66,6 +69,14 @@ public class UserDto {
         this.role = role;
     }
 
+    public String getTutorId() {
+        return tutorId;
+    }
+
+    public void setTutorId(String tutorId) {
+        this.tutorId = tutorId;
+    }
+
     public String getBio() {
         return bio;
     }
@@ -88,5 +99,13 @@ public class UserDto {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public List<String> getEnrolledCourses() {
+        return enrolledCourses;
+    }
+
+    public void setEnrolledCourses(List<String> enrolledCourses) {
+        this.enrolledCourses = enrolledCourses;
     }
 }

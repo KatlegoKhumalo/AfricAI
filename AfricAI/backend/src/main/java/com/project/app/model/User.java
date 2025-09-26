@@ -25,11 +25,20 @@ public class User {
 
     private UserRole role;
 
+    // Human-friendly 7-digit ID for tutors to log in
+    @Indexed(unique = true, sparse = true)
+    private String tutorId;
+
     private String bio;
+
+    // New: title/occupation displayed under full name
+    private String title;
 
     private boolean verified;
 
     private Date joinDate;
+
+    private String resetToken;
 
     // --- Getters and Setters ---
 
@@ -89,12 +98,28 @@ public class User {
         this.role = role;
     }
 
+    public String getTutorId() {
+        return tutorId;
+    }
+
+    public void setTutorId(String tutorId) {
+        this.tutorId = tutorId;
+    }
+
     public String getBio() {
         return bio;
     }
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public boolean isVerified() {
@@ -111,5 +136,13 @@ public class User {
 
     public void setJoinDate(Date joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
 }

@@ -18,6 +18,7 @@ public class UserMapper {
         userDto.setEmail(user.getEmail());
         userDto.setAvatarUrl(user.getAvatarUrl());
         userDto.setRole(user.getRole());
+        userDto.setTutorId(user.getTutorId());
         userDto.setBio(user.getBio());
         userDto.setVerified(user.isVerified());
         userDto.setJoinDate(user.getJoinDate());

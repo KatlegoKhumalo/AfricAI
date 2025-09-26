@@ -116,13 +116,19 @@ const CourseViewPage: React.FC = () => {
                             </div>
                         )}
 
-                        { allChaptersCompleted ? (
-                            <Link to={`/course/${course.id}/test`} className="w-full">
-                                <Button className="w-full text-lg">{latestResult ? 'Retake Test' : 'Take Test'}</Button>
-                            </Link>
+                        { user?.enrolledCourses?.includes(course.id) ? (
+                            allChaptersCompleted ? (
+                                <Link to={`/course/${course.id}/test`} className="w-full">
+                                    <Button className="w-full text-lg">{latestResult ? 'Retake Test' : 'Take Test'}</Button>
+                                </Link>
+                            ) : (
+                                <Link to={`/course/${course.id}/chapter/${course.chapters[0].id}`} className="w-full">
+                                    <Button className="w-full text-lg">Go to Course</Button>
+                                </Link>
+                            )
                         ) : (
                             <Link to={`/checkout/${course.id}`} className="w-full">
-                                <Button className="w-full text-lg">Enroll Now</Button>
+                                <Button className="w-full text-lg">Enroll Now for R{price}</Button>
                             </Link>
                         )}
                         

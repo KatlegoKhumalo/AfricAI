@@ -22,6 +22,7 @@ const CoursesListPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   const [selectedPrice, setSelectedPrice] = useState('All');
+  const [minRating, setMinRating] = useState<number | 'All' >('All');
 
   useEffect(() => {
     setIsLoading(true);
@@ -54,14 +55,18 @@ const CoursesListPage: React.FC = () => {
             }
         })();
 
-        return categoryMatch && difficultyMatch && priceMatch;
+        const ratingMatch = minRating === 'All' ? true : (course.rating || 0) >= (minRating as number);
+        return categoryMatch && difficultyMatch && priceMatch && ratingMatch;
     });
-}, [selectedCategory, selectedDifficulty, selectedPrice, courses, isLoading]);
+}, [selectedCategory, selectedDifficulty, selectedPrice, courses, isLoading, minRating]);
 
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-center mb-4">All Courses</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-4xl font-bold">All Courses</h1>
+        {/* Removed top-right rating filter; moved to filters row below */}
+      </div>
       <p className="text-gray-400 text-center mb-10">Find your next learning adventure from our curated list of courses.</p>
       
       {/* Filters Section */}
@@ -116,6 +121,21 @@ const CoursesListPage: React.FC = () => {
                     {priceRanges.map(range => (
                         <option key={range.value} value={range.value} className="bg-gray-800 text-white">{range.label}</option>
                     ))}
+                </select>
+            </div>
+
+            {/* Rating Filter - aligned with other filters */}
+            <div className="flex items-center gap-2">
+                <label htmlFor="rating-filter" className="font-semibold text-gray-400">Rating:</label>
+                <select
+                    id="rating-filter"
+                    value={minRating as any}
+                    onChange={(e) => setMinRating(e.target.value === 'All' ? 'All' : Number(e.target.value))}
+                    className="bg-white/10 hover:bg-white/20 text-gray-300 font-semibold px-4 py-2 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-nebula-600 appearance-none text-sm"
+                >
+                    <option value="All" className="bg-gray-800 text-white">All ratings</option>
+                    <option value="4" className="bg-gray-800 text-white">4.0+ stars</option>
+                    <option value="4.5" className="bg-gray-800 text-white">4.5+ stars</option>
                 </select>
             </div>
         </div>
