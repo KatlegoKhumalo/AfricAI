@@ -98,7 +98,12 @@ const TutorProfilePage: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <GlassCard className="p-8 mb-8">
                 <div className="flex flex-col md:flex-row items-center gap-8">
-                    <img src={tutor.avatarUrl} alt={tutor.name} className="w-40 h-40 rounded-full object-cover flex-shrink-0" />
+                    <img
+                        src={tutor.avatarUrl || '/assets/images/default-avatar.svg'}
+                        alt={tutor.name}
+                        className="w-40 h-40 rounded-full object-cover flex-shrink-0"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/assets/images/default-avatar.svg'; }}
+                    />
                     <div className="text-center md:text-left">
                         <h1 className="text-4xl font-bold flex items-center justify-center md:justify-start gap-2">
                             {tutor.name}

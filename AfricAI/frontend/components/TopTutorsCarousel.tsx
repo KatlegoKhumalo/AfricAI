@@ -28,7 +28,12 @@ const TopTutorsCarousel: React.FC = () => {
                 tutors.map(tutor => (
                     <Link to={`/tutor/${tutor.id}`} key={tutor.id} className="block group">
                         <GlassCard className="p-6 flex flex-col items-center text-center gap-4 h-full">
-                            <img src={tutor.avatarUrl} alt={tutor.name} className="w-24 h-24 rounded-full object-cover flex-shrink-0" />
+                            <img
+                                src={tutor.avatarUrl || '/assets/images/default-avatar.svg'}
+                                alt={tutor.name}
+                                className="w-24 h-24 rounded-full object-cover flex-shrink-0"
+                                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/assets/images/default-avatar.svg'; }}
+                            />
                             <div className="flex-1">
                                 <h3 className="text-xl font-bold group-hover:text-nebula-600 transition-colors">{tutor.name}</h3>
                                 <p className="text-nebula-700 text-sm font-semibold">{tutor.title}</p>
